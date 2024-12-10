@@ -149,9 +149,11 @@
 https://www.oauth.com/oauth2-servers/authorization/the-authorization-request/
 https://www.oauth.com/oauth2-servers/authorization/the-authorization-response/
 https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
+
 --->
 
 <script defer>
+
     function copyInputValues(sourceElement) {
         document.querySelectorAll('input[name="'+sourceElement.target.name+'"]').forEach(input => {
             if (input.id!=sourceElement.target.id) { input.value=sourceElement.target.value; }
@@ -188,10 +190,13 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
 
     window.onload = function letsgo() {
+        const urlParams = new URLSearchParams(window.location.search);
+
         document.querySelector('#urlselector').addEventListener('change', (e) => {
             document.querySelector('#url_1').value=e.target.value.split(';')[0];
             document.querySelector('#url_2').value=e.target.value.split(';')[1];
             document.querySelector('#url_3').value=e.target.value.split(';')[1];
+            document.querySelector('#scope').value=e.target.value.split(';')[2];
         });
 
         applyCopyEvent('clientid');
@@ -210,8 +215,26 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         document.querySelector('#fetchauth').addEventListener('click', (e) => {
             console.log('Hoppla!');
             fetchAuthCode();
-        })
+        });
+
+
+
+
+
+        // If this is the return URI for fetching an auth code:
+        if (urlParams.get('code') && urlParams.get('state')) {
+            if (urlParams.get('state')!=localStorage.getItem('state')) {
+                window.alert('Returned state\n'+urlParams('state')+'\n... is not the one we expected:\n'+localStorage.getItem('state'));
+            } else {
+                document.querySelector('#authcode').value=urlParams('code');
+                if (urlParams('scope')) {
+                    document.querySelector('#scope').value=urlParams('scope');
+                }
+            }
+        }
+
     };
+
 </script>
 
 
@@ -224,9 +247,9 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             <div>
                 <label for="urlselector">Service URL:</label>
                 <select id="urlselector">
-                    <option value=";""></option>
-                    <option value="https://accounts.google.com/o/oauth2/v2/auth;https://oauth2.googleapis.com/token">Google</option>
-                    <option value="https://apps.fortnox.se/oauth-v1/auth;https://apps.fortnox.se/oauth-v1/token">Fortnox</option>
+                    <option value=";;""></option>
+                    <option value="https://accounts.google.com/o/oauth2/v2/auth;https://oauth2.googleapis.com/token;profile">Google</option>
+                    <option value="https://apps.fortnox.se/oauth-v1/auth;https://apps.fortnox.se/oauth-v1/token;">Fortnox</option>
                 </select>
             </div>
             <div>
