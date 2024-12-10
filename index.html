@@ -350,9 +350,9 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
     }
 
     function generateState() {
-        const bytes = new Uint8Array(16);
+        const bytes = new Uint8Array(8);
         window.crypto.getRandomValues(bytes);
-        return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+        return Array.from(bytes, byte => byte.toString(8).padStart(2, '0')).join('');
     }
 
     // Saves the values in the input fields in local storage:
