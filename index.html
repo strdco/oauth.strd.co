@@ -178,7 +178,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         url = url+(url.indexOf('?')>=0 ? '&' : '?') +
             'response_type=code' +
             '&client_id=' + encodeURIComponent(document.querySelector('#clientid_1').value) +
-            '&redirect_uri=' + encodeURIComponent(document.location.href) +
+            '&redirect_uri=' + encodeURIComponent(document.location.origin) +
             '&scope=' + encodeURIComponent(document.querySelector('#scope').value) +
             '&state=' + encodeURIComponent(document.querySelector('#state').value);
 
@@ -212,7 +212,25 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
      * 
      */
 
+    function fetchAccessToken() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', document.querySelector('#url_2').value);
+        xhr.setRequestHeader('Authorization', 'Basic '+credentialsBase64)
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
+        xhr.onload = function() {
+            if (xhr.status==200) {
+                const blob=JSON.parse(xhr.response);
+                console.log(blob);
+            }
+        }
+
+        xhr.send(JSON.stringify({
+            'grant_type': 'authorization_code',
+            'code': document.querySelector('#authcode').value,
+            'redirect_uri': encodeURIComponent(document.location.origin)
+        }));
+    }
 
 
 
@@ -260,7 +278,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         document.querySelector('#scope').value=localStorage.getItem('scope');
 
         document.querySelector('#url_2').value=localStorage.getItem('tokenurl');
-        document.querySelector('#url_2').value=localStorage.getItem('tokenurl');
+        document.querySelector('#url_3').value=localStorage.getItem('tokenurl');
 
 
 
@@ -270,10 +288,12 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         });
 
         document.querySelector('#fetchauth').addEventListener('click', (e) => {
-            console.log('Hoppla!');
             fetchAuthCode();
         });
 
+        document.querySelector('#fetchAccessToken').addEventListener('click', (e) => {
+            fetchAccessToken();
+        });
 
 
 
@@ -391,7 +411,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             </div>
         </div>
 
-        <input type="button" value="Fetch tokens"/>
+        <input id="fetchtoken" type="button" value="Fetch token"/>
     </form>
 
     <div class="step">
