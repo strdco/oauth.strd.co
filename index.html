@@ -224,11 +224,13 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         // If this is the return URI for fetching an auth code:
         if (urlParams.get('code') && urlParams.get('state')) {
             if (urlParams.get('state')!=localStorage.getItem('state')) {
-                window.alert('Returned state\n'+urlParams('state')+'\n... is not the one we expected:\n'+localStorage.getItem('state'));
+                window.alert('Returned state\n'+urlParams.get('state')+
+                    '\n... is not the one we expected:\n'+
+                    localStorage.getItem('state'));
             } else {
-                document.querySelector('#authcode').value=urlParams('code');
-                if (urlParams('scope')) {
-                    document.querySelector('#scope').value=urlParams('scope');
+                document.querySelector('#authcode').value=urlParams.get('code');
+                if (urlParams.get('scope')) {
+                    document.querySelector('#scope').value=urlParams.get('scope');
                 }
             }
         }
