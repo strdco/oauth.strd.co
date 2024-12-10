@@ -118,6 +118,10 @@
         background-color: rgba(255, 220, 0, 0.3);
     }
 
+    input#authcode:valid {
+        background-color: rgba(0, 220, 0, 0.3);
+    }
+
     .has-refresh-icon::after {
         content: "\21bb";
         display: block;
@@ -154,26 +158,16 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
 <script defer>
 
-    function copyInputValues(sourceElement) {
-        document.querySelectorAll('input[name="'+sourceElement.target.name+'"]').forEach(input => {
-            if (input.id!=sourceElement.target.id) { input.value=sourceElement.target.value; }
-        });
-    }
-
-    function applyCopyEvent(name) {
-        document.querySelectorAll('input[name="'+name+'"]').forEach(input => {
-            input.addEventListener('change', (e) => { copyInputValues(e); });
-        });
-    }
-
-    function generateState() {
-        const bytes = new Uint8Array(16);
-        window.crypto.getRandomValues(bytes);
-        return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
-    }
+    /*
+     *
+     * STEP 1: Fetch the auth code by having the user log in:
+     * 
+     */
 
     function fetchAuthCode() {
-        localStorage.setItem('state', document.querySelector('#state').value);
+
+        // Save our inputs to local storage:
+        saveFields();
 
         var url=document.querySelector('#url_1').value;
         url = url+(url.indexOf('?')>=0 ? '&' : '?') +
@@ -187,7 +181,52 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         window.open(url, '_self');
     }
 
+    /*
+     *
+     * STEP 2: The auth code that comes back from the auth server:
+     * 
+     */
 
+    function receiveAuthCode(queryStringParams) {
+        if (queryStringParams.get('state')!=localStorage.getItem('state')) {
+            window.alert('Returned state\n'+queryStringParams.get('state')+
+                '\n... is not the one we expected:\n'+
+                localStorage.getItem('state'));
+        } else {
+            document.querySelector('#authcode').value=queryStringParams.get('code');
+            if (queryStringParams.get('scope')) {
+                document.querySelector('#scope').value=queryStringParams.get('scope');
+            }
+        }
+    }
+
+    /*
+     *
+     * STEP 3: Fetch the access token:
+     * 
+     */
+
+
+
+
+
+    /*
+     *
+     * STEP 4: Refresh the access token:
+     * 
+     */
+
+
+
+
+
+
+
+    /*
+     *
+     * When the page loads
+     * 
+     */
 
     window.onload = function letsgo() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -205,7 +244,19 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         if (!localStorage.getItem('state')) {
             localStorage.setItem('state', generateState());
         }
+
+
+        document.querySelector('#url_1').value=localStorage.getItem('authurl');
+        document.querySelector('#clientid_1').value=localStorage.getItem('clientid');
+        document.querySelector('#clientid_2').value=localStorage.getItem('clientid');
+        document.querySelector('#clientid_3').value=localStorage.getItem('clientid');
         document.querySelector('#state').value=localStorage.getItem('state');
+        document.querySelector('#scope').value=localStorage.getItem('scope');
+
+        document.querySelector('#url_2').value=localStorage.getItem('tokenurl');
+        document.querySelector('#url_2').value=localStorage.getItem('tokenurl');
+
+
 
         document.querySelector('.has-refresh-icon').addEventListener('click', () => {
             localStorage.setItem('state', generateState());
@@ -223,19 +274,56 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
         // If this is the return URI for fetching an auth code:
         if (urlParams.get('code') && urlParams.get('state')) {
-            if (urlParams.get('state')!=localStorage.getItem('state')) {
-                window.alert('Returned state\n'+urlParams.get('state')+
-                    '\n... is not the one we expected:\n'+
-                    localStorage.getItem('state'));
-            } else {
-                document.querySelector('#authcode').value=urlParams.get('code');
-                if (urlParams.get('scope')) {
-                    document.querySelector('#scope').value=urlParams.get('scope');
-                }
-            }
+            receiveAuthCode(urlParams);
         }
 
     };
+
+
+
+
+
+
+
+
+
+    /*
+     *
+     * Helper stuff
+     * 
+     */
+
+     function copyInputValues(sourceElement) {
+        document.querySelectorAll('input[name="'+sourceElement.target.name+'"]').forEach(input => {
+            if (input.id!=sourceElement.target.id) { input.value=sourceElement.target.value; }
+        });
+    }
+
+    function applyCopyEvent(name) {
+        document.querySelectorAll('input[name="'+name+'"]').forEach(input => {
+            input.addEventListener('change', (e) => { copyInputValues(e); });
+        });
+    }
+
+    function generateState() {
+        const bytes = new Uint8Array(16);
+        window.crypto.getRandomValues(bytes);
+        return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Saves the values in the input fields in local storage:
+    function saveFields() {
+        localStorage.setItem('authurl')=document.querySelector('#url_1').value;
+        localStorage.setItem('clientid', document.querySelector('#clientid_1').value || document.querySelector('#clientid_2').value || document.querySelector('#clientid_3').value);
+        localStorage.setItem('state', document.querySelector('#state').value);
+        localStorage.setItem('scope', document.querySelector('#scope').value);
+
+        localStorage.setItem('tokenurl')=document.querySelector('#url_2').value || document.querySelector('#url_3').value;
+        localStorage.setItem('clientsecret')=document.querySelector('#clientsecret_2').value || document.querySelector('#clientsecret_3').value;
+
+        localStorage.setItem('accesstoken', document.querySelector('#accesstoken').value);
+        localStorage.setItem('refreshtoken', document.querySelector('#refreshtoken').value);
+    }
 
 </script>
 
@@ -281,7 +369,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             </div>
             <div>
                 <label for="authcode">Auth code:</label>
-                <input type="text" id="authcode" name="authcode" placeholder=""/>
+                <input type="text" id="authcode" name="authcode" required placeholder=""/>
             </div>
             <div>
                 <label for="clientid_2">Client Id:</label>
