@@ -199,6 +199,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 localStorage.getItem('state'));
         } else {
             document.querySelector('#authcode').value=queryStringParams.get('code');
+
             if (queryStringParams.get('scope')) {
                 document.querySelector('#scope').value=queryStringParams.get('scope');
             }
@@ -318,13 +319,13 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
     // Saves the values in the input fields in local storage:
     function saveFields() {
-        localStorage.setItem('authurl')=document.querySelector('#url_1').value;
+        localStorage.setItem('authurl', document.querySelector('#url_1').value);
         localStorage.setItem('clientid', document.querySelector('#clientid_1').value || document.querySelector('#clientid_2').value || document.querySelector('#clientid_3').value);
         localStorage.setItem('state', document.querySelector('#state').value);
         localStorage.setItem('scope', document.querySelector('#scope').value);
 
-        localStorage.setItem('tokenurl')=document.querySelector('#url_2').value || document.querySelector('#url_3').value;
-        localStorage.setItem('clientsecret')=document.querySelector('#clientsecret_2').value || document.querySelector('#clientsecret_3').value;
+        localStorage.setItem('tokenurl', document.querySelector('#url_2').value || document.querySelector('#url_3').value);
+        localStorage.setItem('clientsecret', document.querySelector('#clientsecret_2').value || document.querySelector('#clientsecret_3').value);
 
         localStorage.setItem('accesstoken', document.querySelector('#accesstoken').value);
         localStorage.setItem('refreshtoken', document.querySelector('#refreshtoken').value);
