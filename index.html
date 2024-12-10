@@ -165,10 +165,15 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
      */
 
     function fetchAuthCode() {
+        // Clear old auth code and access/refresh tokens
+        document.querySelector('#authcode').value='';
+        document.querySelector('#accesstoken').value='';
+        document.querySelector('#refreshtoken').value='';
 
-        // Save our inputs to local storage:
+        // ... and save all our inputs to local storage:
         saveFields();
 
+        // Construct the OAuth 2.0 URL to authenticate:
         var url=document.querySelector('#url_1').value;
         url = url+(url.indexOf('?')>=0 ? '&' : '?') +
             'response_type=code' +
@@ -177,7 +182,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             '&scope=' + encodeURIComponent(document.querySelector('#scope').value) +
             '&state=' + encodeURIComponent(document.querySelector('#state').value);
 
-            console.log(url);
+        // .. and open it:
         window.open(url, '_self');
     }
 
@@ -323,6 +328,10 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
         localStorage.setItem('accesstoken', document.querySelector('#accesstoken').value);
         localStorage.setItem('refreshtoken', document.querySelector('#refreshtoken').value);
+    }
+
+    function populateFields() {
+
     }
 
 </script>
