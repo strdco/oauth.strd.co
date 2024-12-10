@@ -1,0 +1,310 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<!---
+    <link rel="shortcut icon" href="/logo.png" type="image/png">
+    <link rel="icon" href="/logo.png" type="image/png">
+
+    <link rel="stylesheet" href="/style.css"/>
+
+    <script src="/client-side.js"></script>
+--->
+
+    <title>OAuth Wizard</title>
+</head>
+<body>
+
+<style>
+    html {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    body {
+        background-image: url('./codioful-formerly-gradienta-J6LMHbdW1k8-unsplash.jpg');
+        background-size: cover;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow: hidden;
+    }
+
+    a.credit {
+        display: none;
+    }
+
+    .panel {
+        margin: 20px auto;
+        width: 50%;
+        min-width: 400px;
+        max-width: 600px;
+        height: calc(100% - 130px);
+        padding: 40px;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 10px 200px rgba(0, 0, 0, 0.25);
+        border-width: 1px;
+        border-style: solid;
+        border-color: rgba(255, 255, 255, 0.75);
+        border-radius: 10px;
+        overflow-y: auto;
+    }
+
+    .step {
+        background-color: white;
+        margin: 20px auto;
+        padding: 30px;
+        font-size: 20px;
+        border-radius: 10px;
+        border-left-style: solid;
+        border-left-width: 4px;
+        border-left-color: white;
+    }
+
+    .step:focus-within {
+        border-left-color: rgba(255, 64, 128);
+    }
+
+    .step div {
+        margin-top: 5px;
+    }
+    .step span {
+        display: inline-block;
+        padding-top: 10px;
+    }
+
+    label {
+        width: 120px;
+        margin-right: 5%;
+        display: inline-block;
+    }
+
+    input, select {
+        width: calc(100% - 170px);
+        font-size: 20px;
+        padding: 5px;
+        border-radius: 3px;
+        border-style: solid;
+        border-width: 1px;
+        border-color: rgb(64, 64, 64);
+    }
+
+    input[type="button"] {
+        background-color: rgba(255, 64, 128);
+        border-width: 1px;
+        border-radius: 10px;
+        color: white;
+        display: block;
+        margin: auto;
+        cursor: pointer;
+    }
+
+    input[type="button"]:active {
+        padding: 7px 3px 3px 7px;
+        box-shadow: inset 10px 10px 10px -10px rgba(0,0,0,0.5);
+    }
+
+    input.wide {
+        width: calc(100% - 25px);
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    input[type="url"]:focus {
+        background-color: rgba(255, 220, 0, 0.3);
+    }
+
+    .has-refresh-icon::after {
+        content: "\21bb";
+        display: block;
+        position: absolute;
+        right: 80px;
+        transform: translateY(-32px); /* Adjust for vertical centering */
+        width: 28px; /* Adjust size as needed */
+        height: 28px;
+        background-color: transparent; /* Make background transparent */
+        z-index: 100;
+        overflow: hidden;
+        padding-left: 8px;
+        border-radius: 8px;
+        font-size: 24px;
+        background-color: rgb(0, 128, 0);
+        color: white; /* Icon color */
+        opacity: 0.25;
+        cursor: pointer;
+    }
+
+    .has-refresh-icon:hover::after {
+        opacity: 1.0;
+    }
+
+</style>
+
+
+<!----
+https://www.oauth.com/oauth2-servers/authorization/the-authorization-request/
+https://www.oauth.com/oauth2-servers/authorization/the-authorization-response/
+https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
+--->
+
+<script defer>
+    function copyInputValues(sourceElement) {
+        document.querySelectorAll('input[name="'+sourceElement.target.name+'"]').forEach(input => {
+            if (input.id!=sourceElement.target.id) { input.value=sourceElement.target.value; }
+        });
+    }
+
+    function applyCopyEvent(name) {
+        document.querySelectorAll('input[name="'+name+'"]').forEach(input => {
+            input.addEventListener('change', (e) => { copyInputValues(e); });
+        });
+    }
+
+    function generateState() {
+        const bytes = new Uint8Array(16);
+        window.crypto.getRandomValues(bytes);
+        return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    function fetchAuthCode() {
+        localStorage.setItem('state', document.querySelector('#state').value);
+
+        var url=document.querySelector('#url_1').value;
+        url = url+(url.indexOf('?')>=0 ? '&' : '?') +
+            'response_type=code' +
+            '&client_id=' + encodeURIComponent(document.querySelector('#clientid_1').value) +
+            '&redirect_uri=' + encodeURIComponent(document.location.href) +
+            '&scope=' + encodeURIComponent(document.querySelector('#scope').value) +
+            '&state=' + encodeURIComponent(document.querySelector('#state').value);
+
+            console.log(url);
+        window.open(url, '_self');
+    }
+
+
+
+    window.onload = function letsgo() {
+        document.querySelector('#urlselector').addEventListener('change', (e) => {
+            document.querySelector('#url_1').value=e.target.value.split(';')[0];
+            document.querySelector('#url_2').value=e.target.value.split(';')[1];
+            document.querySelector('#url_3').value=e.target.value.split(';')[1];
+        });
+
+        applyCopyEvent('clientid');
+        applyCopyEvent('clientsecret');
+
+        if (!localStorage.getItem('state')) {
+            localStorage.setItem('state', generateState());
+        }
+        document.querySelector('#state').value=localStorage.getItem('state');
+
+        document.querySelector('.has-refresh-icon').addEventListener('click', () => {
+            localStorage.setItem('state', generateState());
+            document.querySelector('#state').value=localStorage.getItem('state');
+        });
+
+        document.querySelector('#fetchauth').addEventListener('click', (e) => {
+            console.log('Hoppla!');
+            fetchAuthCode();
+        })
+    };
+</script>
+
+
+
+
+<div class="panel">
+    
+    <form>
+        <div class="step">
+            <div>
+                <label for="urlselector">Service URL:</label>
+                <select id="urlselector">
+                    <option value=";""></option>
+                    <option value="https://accounts.google.com/o/oauth2/v2/auth;https://oauth2.googleapis.com/token">Google</option>
+                    <option value="https://apps.fortnox.se/oauth-v1/auth;https://apps.fortnox.se/oauth-v1/token">Fortnox</option>
+                </select>
+            </div>
+            <div>
+                <input type="url" class="wide" id="url_1" name="url" placeholder="https://example.com/oauth/auth"/>
+            </div>
+            <div>
+                <label for="clientid_1">Client Id:</label>
+                <input class= type="text" id="clientid_1" name="clientid" placeholder="Client Id"/>
+            </div>
+            <div class="has-refresh-icon">
+                <label for="State">State:</label>
+                <input type="text" id="state" name="state" placeholder="State"/>
+            </div>
+            <div>
+                <label for="scope">Scope:</label>
+                <input type="text" id="scope" name="scope" placeholder="Scope"/>
+            </div>
+        </div>
+
+        <input id="fetchauth" type="button" value="Fetch auth code"/>
+    </form>
+
+    <form>
+        <div class="step">
+            <div>
+                <input type="url" class="wide" id="url_2" name="url" placeholder="https://example.com/oauth/token"/>
+            </div>
+            <div>
+                <label for="authcode">Auth code:</label>
+                <input type="text" id="authcode" name="authcode" placeholder=""/>
+            </div>
+            <div>
+                <label for="clientid_2">Client Id:</label>
+                <input type="text" id="clientid_2" name="clientid" placeholder=""/>
+            </div>
+            <div>
+                <label for="clientsecret_2">Client Secret:</label>
+                <input type="text" id="clientsecret_2" name="clientsecret" placeholder=""/>
+            </div>
+        </div>
+
+        <input type="button" value="Fetch tokens"/>
+    </form>
+
+    <div class="step">
+        <div>
+            <span>Access token:</span>
+            <input class="wide" type="text" id="accesstoken" name="accesstoken"/>
+        </div>
+    </div>
+
+    <form>
+        <div class="step">
+            <div>
+                <input type="url" class="wide" id="url_3" name="url" placeholder="https://example.com/oauth/token"/>
+            </div>
+            <div>
+                <label for="clientid_3">Client Id:</label>
+                <input type="text" id="clientid_3" name="clientid" placeholder=""/>
+            </div>
+            <div>
+                <label for="clientsecret_3">Client Secret:</label>
+                <input type="text" id="clientsecret_3" name="clientsecret" placeholder=""/>
+            </div>
+            <div>
+                <span>Refresh token:</span>
+                <input class="wide" type="text" id="refreshtoken" name="refreshtoken"/>
+            </div>
+        </div>
+
+        <input type="button" value="Refresh tokens"/>
+    </form>
+</div>
+
+
+<!----
+<a class="credit" href="https://unsplash.com/photos/blue-and-white-abstract-painting-J6LMHbdW1k8"></a>
+--->
+
+</body>
+</html>
