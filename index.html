@@ -215,7 +215,6 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
     function fetchAccessToken() {
         var xhr = new XMLHttpRequest();
         xhr.open('POST', document.querySelector('#url_2').value);
-        xhr.setRequestHeader('Authorization', 'Basic '+credentialsBase64)
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         xhr.onload = function() {
@@ -225,20 +224,40 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             }
         }
 
-        xhr.send(JSON.stringify({
-            'grant_type': 'authorization_code',
-            'code': document.querySelector('#authcode').value,
-            'redirect_uri': encodeURIComponent(document.location.origin)
-        }));
+        xhr.send(
+            'client_id='+encodeURIComponent(document.querySelector('#clientid_2').value)+
+            '&client_secret='+encodeURIComponent(document.querySelector('#clientsecret_2').value)+
+            '&code='+encodeURIComponent(document.querySelector('#authtoken').value)+
+            '&grant_type=authorization_token'+
+            '&redirect_uri'+document.location.origin);
     }
-
-
 
     /*
      *
      * STEP 4: Refresh the access token:
      * 
      */
+
+    function refreshAccessToken() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', document.querySelector('#url_3').value);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+        xhr.onload = function() {
+            if (xhr.status==200) {
+                const blob=JSON.parse(xhr.response);
+                console.log(blob);
+            }
+        }
+
+        xhr.send(
+            'client_id='+encodeURIComponent(document.querySelector('#clientid_3').value)+
+            '&client_secret='+encodeURIComponent(document.querySelector('#clientsecret_3').value)+
+            '&refresh_token='+encodeURIComponent(document.querySelector('#refreshtoken').value)+
+            '&grant_type=refresh_token');
+    }
+
+
 
 
 
