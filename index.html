@@ -482,9 +482,9 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         setInput('url_1', localStorage.getItem('authurl'));
         setInput('clientid_1', localStorage.getItem('clientid'));
         setInput('scope', localStorage.getItem('scope'));
-        setInput('prompt_consent', localStorage.getItem('prompt').indexOf('consent')!=-1);
-        setInput('prompt_select_account', localStorage.getItem('prompt').indexOf('select_account')!=-1);
-        setInput('access_type_offline', localStorage.getItem('access_type')=='offline');
+        setInput('prompt_consent', (localStorage.getItem('prompt')===null ? true : localStorage.getItem('prompt').indexOf('consent'))!=-1);
+        setInput('prompt_select_account', (localStorage.getItem('prompt')===null ? false : localStorage.getItem('prompt').indexOf('select_account')!=-1));
+        setInput('access_type_offline', (localStorage.getItem('access_type')===null ? true : localStorage.getItem('access_type')=='offline'));
 
         setInput('url_2', localStorage.getItem('tokenurl'));
         setInput('clientid_2', localStorage.getItem('clientid'));
