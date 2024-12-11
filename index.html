@@ -229,6 +229,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             '&access_type=offline'+ // TODO: add checkbox for this option (required for refresh tokens); otherwise, access_type=online
             '&prompt=consent'+ // TODO: add checkbox for this option (required for refresh tokens)
 
+        console.log(url.split('&'));
         // .. and open it:
         window.open(url, '_self');
     }
