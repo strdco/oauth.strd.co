@@ -303,7 +303,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
             if (xhr.status==200) {
                 setInput('authcode', '');
-                setInput('accesstoken', blob.access_token);
+                setInput('accesstoken', blob.access_token, true);
                 document.querySelector('.authcode-arrow').style.display='none';
                 document.querySelector('.accesstoken-arrow').style.display='block';
 
@@ -360,7 +360,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             resElement.style.display='block';
 
             if (xhr.status==200) {
-                setInput('accesstoken', blob.access_token);
+                setInput('accesstoken', blob.access_token, true);
             }
         }
 
@@ -470,13 +470,15 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         }
     }
 
-    function setInput(id, value) {
+    function setInput(id, value, scrollIntoView) {
         var inputElement=document.querySelector('#'+id)
         if (inputElement.type=='checkbox') {
             inputElement.checked=value;
         } else {
             inputElement.value=value;
         }
+
+        if (scrollIntoView) { inputElement.scrollIntoView(); }
     }
 
     // Saves the values in the input fields in local storage:
