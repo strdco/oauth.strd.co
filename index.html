@@ -227,7 +227,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             '&scope=' + encodeURIComponent(document.querySelector('#scope').value) +
             '&state=' + encodeURIComponent(document.querySelector('#state').value) +
             '&access_type=offline'+ // TODO: add checkbox for this option (required for refresh tokens); otherwise, access_type=online
-            '&prompt=consent'+ // TODO: add checkbox for this option (required for refresh tokens)
+            '&prompt=consent' // TODO: add checkbox for this option (required for refresh tokens)
 
         console.log(url.split('&'));
         // .. and open it:
