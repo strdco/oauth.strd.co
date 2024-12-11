@@ -55,7 +55,7 @@
     }
 
     .step.json-response {
-        -display: none;
+        display: none;
         background-color: rgb(0, 0, 0, 0.75);
         color: rgb(224, 224, 224);
         font-size: 12px;
@@ -262,7 +262,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             const blob=JSON.parse(xhr.response);
             var element=document.querySelector('#fetchtoken + .json-response');
             element.setAttribute('data-http-status', 'HTTP/'+xhr.status);
-            element.innerText=JSON.stringify(blob, null, 2);
+            element.innerText=JSON.stringify(blob, null, 3);
             element.style.display='block';
 
             console.log(blob);
@@ -292,7 +292,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             const blob=JSON.parse(xhr.response);
             var element=document.querySelector('#refreshtoken + .json-response');
             element.setAttribute('data-http-status', 'HTTP/'+xhr.status);
-            element.innerText=JSON.stringify(blob, null, 2);
+            element.innerText=JSON.stringify(blob, null, 3);
             element.style.display='block';
             console.log(blob);
 
