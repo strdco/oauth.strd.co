@@ -265,9 +265,6 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         xhr.open('POST', document.querySelector('#url_2').value);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-        document.querySelector('#accesstoken').value='';
-        document.querySelector('#refreshtoken').value='';
-
         xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
             var element=document.querySelector('#fetchtoken + .json-response');
@@ -296,6 +293,9 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             '&grant_type=authorization_code'+
             '&redirect_uri='+encodeURIComponent(document.location.origin)
         );
+
+        document.querySelector('#accesstoken').value='';
+        document.querySelector('#refreshtoken').value='';
     }
 
     /*
@@ -310,8 +310,6 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         xhr.onload = function() {
-            document.querySelector('#accesstoken').value='';
-            document.querySelector('#refreshtoken').value='';
 
             const blob=JSON.parse(xhr.response);
             var element=document.querySelector('#fetchrefreshtoken + .json-response');
@@ -321,14 +319,6 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
             if (xhr.status==200) {
                 document.querySelector('#accesstoken').value=blob.access_token;
-                if (blob.refresh_token) {
-                    document.querySelector('.step.refresh').style.display='block';
-                    document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='block';
-                    document.querySelector('#refreshtoken').value=blob.refresh_token;
-                } else {
-                    document.querySelector('.step.refresh').style.display='none';
-                    document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='none';
-                }
             }
         }
 
@@ -337,6 +327,8 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             '&client_secret='+encodeURIComponent(document.querySelector('#clientsecret_3').value)+
             '&refresh_token='+encodeURIComponent(document.querySelector('#refreshtoken').value)+
             '&grant_type=refresh_token');
+
+        document.querySelector('#accesstoken').value='';
     }
 
 
