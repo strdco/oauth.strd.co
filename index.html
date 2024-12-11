@@ -304,7 +304,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         }
 
         xhr.send(
-            'client_id='+encodeURIComponent(getInput('clientid_2'))+
+            'client_id='+encodeURIComponent(getInput('clientid_1'))+
             '&client_secret='+encodeURIComponent(getInput('clientsecret_2'))+
             '&code='+encodeURIComponent(getInput('authcode'))+
             '&grant_type=authorization_code'+
@@ -323,7 +323,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
     function refreshAccessToken() {
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', getInput('url_3'));
+        xhr.open('POST', getInput('url_2'));
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         xhr.onload = function() {
