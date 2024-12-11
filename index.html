@@ -368,7 +368,6 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         document.querySelector('#urlselector').addEventListener('change', (e) => {
             setInput('url_1', e.target.value.split(';')[0]);
             setInput('url_2', e.target.value.split(';')[1]);
-            setInput('url_3', e.target.value.split(';')[1]);
             setInput('scope', e.target.value.split(';')[2]);
         });
 
@@ -471,7 +470,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             (getInput('prompt_select_account') ? 'select_account' : ''));
         localStorage.setItem('access_type', getInput('access_type_offline') ? 'offline' : 'online');
 
-        localStorage.setItem('tokenurl', getInput('url_2') || getInput('url_3'));
+        localStorage.setItem('tokenurl', getInput('url_2'));
         localStorage.setItem('clientsecret', getInput('clientsecret_2') || getInput('clientsecret_3'));
 
         localStorage.setItem('accesstoken', getInput('accesstoken'));
@@ -489,10 +488,6 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         setInput('access_type_offline', (localStorage.getItem('access_type')===null ? true : localStorage.getItem('access_type')=='offline'));
 
         setInput('url_2', localStorage.getItem('tokenurl'));
-        setInput('clientid_2', localStorage.getItem('clientid'));
-
-        setInput('url_3', localStorage.getItem('tokenurl'));
-        setInput('clientid_3', localStorage.getItem('clientid'));
     }
 
 </script>
@@ -560,10 +555,6 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 <input type="text" id="authcode" name="authcode" readonly placeholder=""/>
             </div>
             <div>
-                <label for="clientid_2">Client Id:</label>
-                <input type="text" id="clientid_2" name="clientid" placeholder=""/>
-            </div>
-            <div>
                 <label for="clientsecret_2">Client Secret:</label>
                 <input type="password" id="clientsecret_2" name="clientsecret" placeholder=""/>
             </div>
@@ -584,17 +575,6 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
     <form>
         <div class="step refresh">
-            <div>
-                <input type="url" class="wide" id="url_3" name="url" placeholder="https://example.com/oauth/token"/>
-            </div>
-            <div>
-                <label for="clientid_3">Client Id:</label>
-                <input type="text" id="clientid_3" name="clientid" placeholder=""/>
-            </div>
-            <div>
-                <label for="clientsecret_3">Client Secret:</label>
-                <input type="password" id="clientsecret_3" name="clientsecret" placeholder=""/>
-            </div>
             <div>
                 <span>Refresh token:</span>
                 <div class="arrow right refreshtoken-arrow"></div>
