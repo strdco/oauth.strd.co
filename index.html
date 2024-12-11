@@ -228,7 +228,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
         xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
-            document.querySelector('#fetchtoken + .json-response').innerText='blob';
+            document.querySelector('#fetchtoken + .json-response').innerText=blob;
             document.querySelector('#fetchtoken + .json-response').style.display='block';
 
             console.log(blob);
@@ -256,7 +256,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
         xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
-            document.querySelector('#refreshtoken + .json-response').innerText='blob';
+            document.querySelector('#refreshtoken + .json-response').innerText=blob;
             document.querySelector('#refreshtoken + .json-response').style.display='block';
             console.log(blob);
 
