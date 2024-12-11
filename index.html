@@ -54,7 +54,16 @@
         overflow-y: auto;
     }
 
-    .step {
+    .step.json-response {
+        display: none;
+        background-color: rgb(0, 0, 0, 0.75);
+        color: rgb(224, 224, 224);
+        font-size: 12px;
+        font-family: 'Lucida Console', 'Courier New', Courier, monospace;
+        border-left-style: none;
+    }
+
+    .step, .footer {
         background-color: white;
         margin: 20px auto;
         padding: 30px;
@@ -219,6 +228,9 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
         xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
+            document.querySelector('#fetchtoken + .json-response').innerText='blob';
+            document.querySelector('#fetchtoken + .json-response').style.display='block';
+
             console.log(blob);
         }
 
@@ -243,10 +255,11 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         xhr.onload = function() {
-            if (xhr.status==200) {
-                const blob=JSON.parse(xhr.response);
-                console.log(blob);
-            }
+            const blob=JSON.parse(xhr.response);
+            document.querySelector('#refreshtoken + .json-response').innerText='blob';
+            document.querySelector('#refreshtoken + .json-response').style.display='block';
+            console.log(blob);
+
         }
 
         xhr.send(
@@ -287,6 +300,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             localStorage.setItem('state', generateState());
         }
 
+        document.querySelector('#granttype').value=localStorage.getItem('granttype');
 
         document.querySelector('#url_1').value=localStorage.getItem('authurl');
         document.querySelector('#clientid_1').value=localStorage.getItem('clientid');
@@ -310,7 +324,11 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         });
 
         document.querySelector('#fetchtoken').addEventListener('click', (e) => {
-            fetchAccessToken();
+            switch (document.querySelector('#granttype').value) {
+                case 'auth_code':
+                    fetchAccessToken();
+                    exit;
+            }
         });
 
 
@@ -357,6 +375,8 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
     // Saves the values in the input fields in local storage:
     function saveFields() {
+        localStorage.setItem('granttype', document.querySelector('#granttype').value);
+
         localStorage.setItem('authurl', document.querySelector('#url_1').value);
         localStorage.setItem('clientid', document.querySelector('#clientid_1').value || document.querySelector('#clientid_2').value || document.querySelector('#clientid_3').value);
         localStorage.setItem('state', document.querySelector('#state').value);
@@ -379,12 +399,21 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
 
 <div class="panel">
-    
+    <div class="step">
+        <div>
+            <label for="granttype">Grant type:</label>
+            <select id="granttype">
+            <!--<option value="client_credentials">Client credentials</option> --->
+                <option value="auth_code">Auth code</option>
+            </select>
+        </div>
+    </div>
+
     <form>
         <div class="step">
             <div>
                 <label for="urlselector">Service URL:</label>
-                <select id="urlselector">
+                <select class="wide" id="urlselector">
                     <option value=";;""></option>
                     <option value="https://accounts.google.com/o/oauth2/v2/auth;https://oauth2.googleapis.com/token;profile">Google</option>
                     <option value="https://apps.fortnox.se/oauth-v1/auth;https://apps.fortnox.se/oauth-v1/token;">Fortnox</option>
@@ -408,6 +437,8 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         </div>
 
         <input id="fetchauth" type="button" value="Fetch auth code"/>
+
+        <pre class="step json-response"></pre>
     </form>
 
     <form>
@@ -430,6 +461,8 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         </div>
 
         <input id="fetchtoken" type="button" value="Fetch token"/>
+
+        <pre class="step json-response"></pre>
     </form>
 
     <div class="step">
@@ -458,7 +491,10 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             </div>
         </div>
 
-        <input type="button" value="Refresh tokens"/>
+        <input id="refreshtoken" type="button" value="Refresh tokens"/>
+
+        <pre class="step json-response"></pre>
+
     </form>
 </div>
 
