@@ -276,6 +276,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             element.style.display='block';
 
             if (xhr.status==200) {
+                document.querySelector('#authcode').value='';
                 document.querySelector('#accesstoken').value=blob.access_token;
                 if (blob.refresh_token) {
                     document.querySelector('.step.refresh').style.display='block';
@@ -308,10 +309,10 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         xhr.open('POST', document.querySelector('#url_3').value);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-        document.querySelector('#accesstoken').value='';
-        document.querySelector('#refreshtoken').value='';
-
         xhr.onload = function() {
+            document.querySelector('#accesstoken').value='';
+            document.querySelector('#refreshtoken').value='';
+
             const blob=JSON.parse(xhr.response);
             var element=document.querySelector('#fetchrefreshtoken + .json-response');
             element.setAttribute('data-http-status', 'HTTP/'+xhr.status);
