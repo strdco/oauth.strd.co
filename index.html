@@ -308,14 +308,27 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         xhr.open('POST', document.querySelector('#url_3').value);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
+        document.querySelector('#accesstoken').value='';
+        document.querySelector('#refreshtoken').value='';
+
         xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
             var element=document.querySelector('#refreshtoken + .json-response');
             element.setAttribute('data-http-status', 'HTTP/'+xhr.status);
             element.innerText=JSON.stringify(blob, null, 3);
             element.style.display='block';
-            console.log(blob);
 
+            if (xhr.status==200) {
+                document.querySelector('#accesstoken').value=blob.access_token;
+                if (blob.refresh_token) {
+                    document.querySelector('.step.refresh').style.display='block';
+                    document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='block';
+                    document.querySelector('#refreshtoken').value=blob.refresh_token;
+                } else {
+                    document.querySelector('.step.refresh').style.display='none';
+                    document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='none';
+                }
+            }
         }
 
         xhr.send(
@@ -383,6 +396,14 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             switch (document.querySelector('#granttype').value) {
                 case 'auth_code':
                     fetchAccessToken();
+                    exit;
+            }
+        });
+
+        document.querySelector('#fetchrefreshtoken').addEventListener('click', (e) => {
+            switch (document.querySelector('#granttype').value) {
+                case 'auth_code':
+                    refreshAccessToken();
                     exit;
             }
         });
@@ -512,7 +533,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             </div>
             <div>
                 <label for="clientsecret_2">Client Secret:</label>
-                <input type="text" id="clientsecret_2" name="clientsecret" placeholder=""/>
+                <input type="password" id="clientsecret_2" name="clientsecret" placeholder=""/>
             </div>
         </div>
 
@@ -539,7 +560,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             </div>
             <div>
                 <label for="clientsecret_3">Client Secret:</label>
-                <input type="text" id="clientsecret_3" name="clientsecret" placeholder=""/>
+                <input type="password" id="clientsecret_3" name="clientsecret" placeholder=""/>
             </div>
             <div>
                 <span>Refresh token:</span>
