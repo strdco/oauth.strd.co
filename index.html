@@ -68,6 +68,7 @@
         border-left-color: white;
     }
 
+    .step.http-request,
     .step.json-response {
         display: none;
         background-color: rgb(0, 0, 0, 0.75);
@@ -277,12 +278,28 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         xhr.open('POST', getInput('url_2'));
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
+        var postData =
+             'client_id='+encodeURIComponent(getInput('clientid_1'))+
+            '&client_secret='+encodeURIComponent(getInput('clientsecret_2'))+
+            '&code='+encodeURIComponent(getInput('authcode'))+
+            '&grant_type=authorization_code'+
+            '&redirect_uri='+encodeURIComponent(document.location.origin)
+
+
         xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
-            var element=document.querySelector('#fetchtoken + .json-response');
-            element.setAttribute('data-http-status', 'HTTP/'+xhr.status);
-            element.innerText=JSON.stringify(blob, null, 3);
-            element.style.display='block';
+
+            var reqElement=document.querySelector('#fetchtoken ~ .http-request');
+            reqElement.innerText='curl \\\n'+
+                '-X POST "'+getInput('url_2').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
+                '-H "Content-Type: application/x-www-form-urlencoded" \\\n'+
+                '-d "'+postData+'"';
+            reqElement.style.display='block';
+
+            var resElement=document.querySelector('#fetchtoken ~ .json-response');
+            resElement.setAttribute('data-http-status', 'HTTP/'+xhr.status);
+            resElement.innerText=JSON.stringify(blob, null, 3);
+            resElement.style.display='block';
 
             if (xhr.status==200) {
                 setInput('authcode', '');
@@ -303,13 +320,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             }
         }
 
-        xhr.send(
-            'client_id='+encodeURIComponent(getInput('clientid_1'))+
-            '&client_secret='+encodeURIComponent(getInput('clientsecret_2'))+
-            '&code='+encodeURIComponent(getInput('authcode'))+
-            '&grant_type=authorization_code'+
-            '&redirect_uri='+encodeURIComponent(document.location.origin)
-        );
+        xhr.send(postData);
 
         setInput('accesstoken', '');
         setInput('refreshtoken', '');
@@ -329,10 +340,11 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         xhr.onload = function() {
 
             const blob=JSON.parse(xhr.response);
-            var element=document.querySelector('#fetchrefreshtoken + .json-response');
-            element.setAttribute('data-http-status', 'HTTP/'+xhr.status);
-            element.innerText=JSON.stringify(blob, null, 3);
-            element.style.display='block';
+
+            var resElement=document.querySelector('#fetchrefreshtoken ~ .json-response');
+            resElement.setAttribute('data-http-status', 'HTTP/'+xhr.status);
+            resElement.innerText=JSON.stringify(blob, null, 3);
+            resElement.style.display='block';
 
             if (xhr.status==200) {
                 setInput('accesstoken', blob.access_token);
@@ -541,6 +553,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
         <input id="fetchauth" type="button" value="Authenticate user"/>
 
+        <pre class="step http-request"></pre>
         <pre class="step json-response"></pre>
     </form>
 
@@ -584,6 +597,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
         <input id="fetchrefreshtoken" type="button" value="Refresh tokens"/>
 
+        <pre class="step http-request"></pre>
         <pre class="step json-response"></pre>
 
     </form>
