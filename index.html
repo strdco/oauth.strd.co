@@ -347,7 +347,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
             const blob=JSON.parse(xhr.response);
 
-            var reqElement=document.querySelector('#fetchtoken ~ .http-request');
+            var reqElement=document.querySelector('#fetchrefreshtoken ~ .http-request');
             reqElement.innerText='$ curl \\\n'+
                 '   -X POST "/'+getInput('url_2').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
                 '   -H "Content-Type: application/x-www-form-urlencoded" \\\n'+
