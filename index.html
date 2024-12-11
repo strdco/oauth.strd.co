@@ -72,7 +72,7 @@
         font-size: 12px;
         font-family: 'Lucida Console', 'Courier New', Courier, monospace;
         border-left-style: none;
-        overflow-x: auto;
+        overflow-x: hidden;
     }
 
     .step.json-response::before {
@@ -225,7 +225,9 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             '&client_id=' + encodeURIComponent(document.querySelector('#clientid_1').value) +
             '&redirect_uri=' + encodeURIComponent(document.location.origin) +
             '&scope=' + encodeURIComponent(document.querySelector('#scope').value) +
-            '&state=' + encodeURIComponent(document.querySelector('#state').value);
+            '&state=' + encodeURIComponent(document.querySelector('#state').value) +
+            '&access_type=offline'+ // TODO: add checkbox for this option (required for refresh tokens); otherwise, access_type=online
+            '&prompt=consent'+ // TODO: add checkbox for this option (required for refresh tokens)
 
         // .. and open it:
         window.open(url, '_self');
@@ -290,7 +292,6 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             '&client_secret='+encodeURIComponent(document.querySelector('#clientsecret_2').value)+
             '&code='+encodeURIComponent(document.querySelector('#authcode').value)+
             '&grant_type=authorization_code'+
-            '&access_type=offline&prompt=consent'+ // TODO: add checkbox for this option
             '&redirect_uri='+encodeURIComponent(document.location.origin)
         );
     }
