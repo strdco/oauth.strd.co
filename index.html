@@ -313,7 +313,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
         xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
-            var element=document.querySelector('#refreshtoken + .json-response');
+            var element=document.querySelector('#fetchrefreshtoken + .json-response');
             element.setAttribute('data-http-status', 'HTTP/'+xhr.status);
             element.innerText=JSON.stringify(blob, null, 3);
             element.style.display='block';
