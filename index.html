@@ -278,7 +278,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         xhr.open('POST', getInput('url_2'));
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-        var postData =
+        const postData =
              'client_id='+encodeURIComponent(getInput('clientid_1'))+
             '&client_secret='+encodeURIComponent(getInput('clientsecret_2'))+
             '&code='+encodeURIComponent(getInput('authcode'))+
@@ -290,10 +290,10 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             const blob=JSON.parse(xhr.response);
 
             var reqElement=document.querySelector('#fetchtoken ~ .http-request');
-            reqElement.innerText='curl \\\n'+
-                '-X POST "'+getInput('url_2').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
-                '-H "Content-Type: application/x-www-form-urlencoded" \\\n'+
-                '-d "'+postData+'"';
+            reqElement.innerText='$ curl \\\n'+
+                '   -X POST "/'+getInput('url_2').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
+                '   -H "Content-Type: application/x-www-form-urlencoded" \\\n'+
+                '   -d "'+postData+'"';
             reqElement.style.display='block';
 
             var resElement=document.querySelector('#fetchtoken ~ .json-response');
@@ -337,9 +337,22 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         xhr.open('POST', getInput('url_2'));
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
+        const postData=
+            'client_id='+encodeURIComponent(getInput('clientid_3'))+
+            '&client_secret='+encodeURIComponent(getInput('clientsecret_3'))+
+            '&refresh_token='+encodeURIComponent(getInput('refreshtoken'))+
+            '&grant_type=refresh_token'
+
         xhr.onload = function() {
 
             const blob=JSON.parse(xhr.response);
+
+            var reqElement=document.querySelector('#fetchtoken ~ .http-request');
+            reqElement.innerText='$ curl \\\n'+
+                '   -X POST "/'+getInput('url_2').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
+                '   -H "Content-Type: application/x-www-form-urlencoded" \\\n'+
+                '   -d "'+postData+'"';
+            reqElement.style.display='block';
 
             var resElement=document.querySelector('#fetchrefreshtoken ~ .json-response');
             resElement.setAttribute('data-http-status', 'HTTP/'+xhr.status);
@@ -351,11 +364,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             }
         }
 
-        xhr.send(
-            'client_id='+encodeURIComponent(getInput('clientid_3'))+
-            '&client_secret='+encodeURIComponent(getInput('clientsecret_3'))+
-            '&refresh_token='+encodeURIComponent(getInput('refreshtoken'))+
-            '&grant_type=refresh_token');
+        xhr.send(postData);
 
         setInput('accesstoken', '');
     }
