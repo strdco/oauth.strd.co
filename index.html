@@ -20,6 +20,8 @@
         height: 100%;
         padding: 0;
         margin: 0;
+
+        --accent-color: rgba(255, 64, 128);
     }
 
     body {
@@ -107,7 +109,7 @@
     }
 
     .step:focus-within {
-        border-left-color: rgba(255, 64, 128);
+        border-left-color: var(--accent-color);
     }
 
     .step div {
@@ -139,8 +141,16 @@
         border-color: rgb(64, 64, 64);
     }
 
+    input[type="checkbox"] {
+        width: unset;
+    }
+
+    input[type="checkbox"] + label {
+        width: unset;
+    }
+
     input[type="button"] {
-        background-color: rgba(255, 64, 128);
+        background-color: var(--accent-color);
         border-width: 1px;
         border-radius: 10px;
         color: white;
@@ -164,8 +174,29 @@
         background-color: rgba(255, 220, 0, 0.3);
     }
 
-    input#authcode:valid {
-        background-color: rgba(0, 220, 0, 0.3);
+
+
+
+    .arrow {
+        position: absolute;
+        border-style: solid;
+        border-color: transparent var(--accent-color) var(--accent-color) transparent;
+        border-width: 20px;
+        display: inline-block;
+        filter: drop-shadow(2px 2px 10px rgba(0, 0, 0, 0.25));
+    }
+
+    .arrow::after {
+        position: absolute;
+        content: "";
+        width: 20px;
+        height: 20px;
+        background-color: var(--accent-color);
+        transform: rotate(45deg) translate(-20px, 0px);
+    }
+
+    .right {
+        transform: rotate(-45deg) translate(-44px, -60px);
     }
 
 </style>
@@ -188,9 +219,9 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
     function fetchAuthCode() {
         // Clear old auth code and access/refresh tokens
-        document.querySelector('#authcode').value='';
-        document.querySelector('#accesstoken').value='';
-        document.querySelector('#refreshtoken').value='';
+        setInput('authcode', '');
+        setInput('accesstoken', '');
+        setInput('refreshtoken', '');
 
         localStorage.setItem('state', generateState());
 
@@ -198,12 +229,12 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         saveFields();
 
         // Construct the OAuth 2.0 URL to authenticate:
-        var url=document.querySelector('#url_1').value;
+        var url=getInput('url_1');
         url = url+(url.indexOf('?')>=0 ? '&' : '?') +
             'response_type=code' +
-            '&client_id=' + encodeURIComponent(document.querySelector('#clientid_1').value) +
+            '&client_id=' + encodeURIComponent(getInput('clientid_1')) +
             '&redirect_uri=' + encodeURIComponent(document.location.origin) +
-            '&scope=' + encodeURIComponent(document.querySelector('#scope').value) +
+            '&scope=' + encodeURIComponent(getInput('scope')) +
             '&state=' + encodeURIComponent(localStorage.getItem('state')) +
             '&access_type=offline'+ // TODO: add checkbox for this option (required for refresh tokens); otherwise, access_type=online
             '&prompt=consent' // TODO: add checkbox for this option (required for refresh tokens)
@@ -226,10 +257,10 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 '\n... is not the one we expected:\n'+
                 localStorage.getItem('state'));
         } else {
-            document.querySelector('#authcode').value=queryStringParams.get('code');
+            setInput('authcode', queryStringParams.get('code'));
 
             if (queryStringParams.get('scope')) {
-                document.querySelector('#scope').value=queryStringParams.get('scope');
+                setInput('scope', queryStringParams.get('scope'));
             }
         }
     }
@@ -242,7 +273,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
     function fetchAccessToken() {
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', document.querySelector('#url_2').value);
+        xhr.open('POST', getInput('url_2'));
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         xhr.onload = function() {
@@ -253,12 +284,12 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             element.style.display='block';
 
             if (xhr.status==200) {
-                document.querySelector('#authcode').value='';
-                document.querySelector('#accesstoken').value=blob.access_token;
+                setInput('authcode', '');
+                setInput('accesstoken', blob.access_token);
                 if (blob.refresh_token) {
                     document.querySelector('.step.refresh').style.display='block';
                     document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='block';
-                    document.querySelector('#refreshtoken').value=blob.refresh_token;
+                    setInput('refreshtoken', blob.refresh_token);
                 } else {
                     document.querySelector('.step.refresh').style.display='none';
                     document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='none';
@@ -267,15 +298,15 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         }
 
         xhr.send(
-            'client_id='+encodeURIComponent(document.querySelector('#clientid_2').value)+
-            '&client_secret='+encodeURIComponent(document.querySelector('#clientsecret_2').value)+
-            '&code='+encodeURIComponent(document.querySelector('#authcode').value)+
+            'client_id='+encodeURIComponent(getInput('clientid_2'))+
+            '&client_secret='+encodeURIComponent(getInput('clientsecret_2'))+
+            '&code='+encodeURIComponent(getInput('authcode'))+
             '&grant_type=authorization_code'+
             '&redirect_uri='+encodeURIComponent(document.location.origin)
         );
 
-        document.querySelector('#accesstoken').value='';
-        document.querySelector('#refreshtoken').value='';
+        setInput('accesstoken', '');
+        setInput('refreshtoken', '');
     }
 
     /*
@@ -286,7 +317,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
     function refreshAccessToken() {
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', document.querySelector('#url_3').value);
+        xhr.open('POST', getInput('url_3'));
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         xhr.onload = function() {
@@ -298,17 +329,17 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             element.style.display='block';
 
             if (xhr.status==200) {
-                document.querySelector('#accesstoken').value=blob.access_token;
+                setInput('accesstoken', blob.access_token);
             }
         }
 
         xhr.send(
-            'client_id='+encodeURIComponent(document.querySelector('#clientid_3').value)+
-            '&client_secret='+encodeURIComponent(document.querySelector('#clientsecret_3').value)+
-            '&refresh_token='+encodeURIComponent(document.querySelector('#refreshtoken').value)+
+            'client_id='+encodeURIComponent(getInput('clientid_3'))+
+            '&client_secret='+encodeURIComponent(getInput('clientsecret_3'))+
+            '&refresh_token='+encodeURIComponent(getInput('refreshtoken'))+
             '&grant_type=refresh_token');
 
-        document.querySelector('#accesstoken').value='';
+        setInput('accesstoken', '');
     }
 
 
@@ -329,10 +360,10 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         const urlParams = new URLSearchParams(window.location.search);
 
         document.querySelector('#urlselector').addEventListener('change', (e) => {
-            document.querySelector('#url_1').value=e.target.value.split(';')[0];
-            document.querySelector('#url_2').value=e.target.value.split(';')[1];
-            document.querySelector('#url_3').value=e.target.value.split(';')[1];
-            document.querySelector('#scope').value=e.target.value.split(';')[2];
+            setInput('url_1', e.target.value.split(';')[0]);
+            setInput('url_2', e.target.value.split(';')[1]);
+            setInput('url_3', e.target.value.split(';')[1]);
+            setInput('scope', e.target.value.split(';')[2]);
         });
 
         applyCopyEvent('clientid');
@@ -347,7 +378,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         });
 
         document.querySelector('#fetchtoken').addEventListener('click', (e) => {
-            switch (document.querySelector('#granttype').value) {
+            switch (getInput('granttype')) {
                 case 'auth_code':
                     fetchAccessToken();
                     exit;
@@ -355,7 +386,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         });
 
         document.querySelector('#fetchrefreshtoken').addEventListener('click', (e) => {
-            switch (document.querySelector('#granttype').value) {
+            switch (getInput('granttype')) {
                 case 'auth_code':
                     refreshAccessToken();
                     exit;
@@ -404,33 +435,58 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
     }
 
+    function getInput(id) {
+        var inputElement=document.querySelector('#'+id)
+        if (inputElement.type=='checkbox') {
+            return inputElement.checked;
+        } else {
+            return inputElement.value;
+        }
+    }
+
+    function setInput(id, value) {
+        var inputElement=document.querySelector('#'+id)
+        if (inputElement.type=='checkbox') {
+            inputElement.checked=value;
+        } else {
+            inputElement.value=value;
+        }
+    }
+
     // Saves the values in the input fields in local storage:
     function saveFields() {
-        localStorage.setItem('granttype', document.querySelector('#granttype').value);
+        localStorage.setItem('granttype', getInput('granttype'));
 
-        localStorage.setItem('authurl', document.querySelector('#url_1').value);
-        localStorage.setItem('clientid', document.querySelector('#clientid_1').value || document.querySelector('#clientid_2').value || document.querySelector('#clientid_3').value);
-        localStorage.setItem('scope', document.querySelector('#scope').value);
+        localStorage.setItem('authurl', getInput('url_1'));
+        localStorage.setItem('clientid', getInput('clientid_1') || getInput('clientid_2') || getInput('clientid_3'));
+        localStorage.setItem('scope', getInput('scope'));
+        localStorage.setItem('prompt',
+            (getInput('prompt_consent') ? 'consent' : '') + ' ' +
+            (getInput('prompt_select_account') ? 'select_account' : ''));
+        localStorage.setItem('access_type', getInput('access_type_offline') ? 'offline' : 'online');
 
-        localStorage.setItem('tokenurl', document.querySelector('#url_2').value || document.querySelector('#url_3').value);
-        localStorage.setItem('clientsecret', document.querySelector('#clientsecret_2').value || document.querySelector('#clientsecret_3').value);
+        localStorage.setItem('tokenurl', getInput('url_2') || getInput('url_3'));
+        localStorage.setItem('clientsecret', getInput('clientsecret_2') || getInput('clientsecret_3'));
 
-        localStorage.setItem('accesstoken', document.querySelector('#accesstoken').value);
-        localStorage.setItem('refreshtoken', document.querySelector('#refreshtoken').value);
+        localStorage.setItem('accesstoken', getInput('accesstoken'));
+        localStorage.setItem('refreshtoken', getInput('refreshtoken'));
     }
 
     function populateFields() {
-        document.querySelector('#granttype').value=localStorage.getItem('granttype') || 'auth_code';
+        setInput('granttype', localStorage.getItem('granttype') || 'auth_code');
 
-        document.querySelector('#url_1').value=localStorage.getItem('authurl');
-        document.querySelector('#clientid_1').value=localStorage.getItem('clientid');
-        document.querySelector('#scope').value=localStorage.getItem('scope');
+        setInput('url_1', localStorage.getItem('authurl'));
+        setInput('clientid_1', localStorage.getItem('clientid'));
+        setInput('scope', localStorage.getItem('scope'));
+        setInput('prompt_consent', localStorage.getItem('prompt').indexOf('consent')!=-1);
+        setInput('prompt_select_account', localStorage.getItem('prompt').indexOf('select_account')!=-1);
+        setInput('access_type_offline', localStorage.getItem('access_type')=='offline');
 
-        document.querySelector('#url_2').value=localStorage.getItem('tokenurl');
-        document.querySelector('#clientid_2').value=localStorage.getItem('clientid');
+        setInput('url_2', localStorage.getItem('tokenurl'));
+        setInput('clientid_2', localStorage.getItem('clientid'));
 
-        document.querySelector('#url_3').value=localStorage.getItem('tokenurl');
-        document.querySelector('#clientid_3').value=localStorage.getItem('clientid');
+        setInput('url_3', localStorage.getItem('tokenurl'));
+        setInput('clientid_3', localStorage.getItem('clientid'));
     }
 
 </script>
@@ -471,9 +527,18 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 <label for="scope">Scope:</label>
                 <input type="text" id="scope" name="scope" placeholder="Scope"/>
             </div>
+            <div>
+                <input type="checkbox" id="prompt_consent" name="prompt"/><label for="prompt_consent">Prompt consent (required for offline refresh)</label>
+            </div>
+            <div>
+                <input type="checkbox" id="prompt_select_account" name="prompt"/><label for="prompt_select_account">Prompt to select account</label>
+            </div>
+            <div>
+                <input type="checkbox" id="access_type_offline" name="access_type"/><label for="access_type_offline">Allow offline refresh</label>
+            </div>
         </div>
 
-        <input id="fetchauth" type="button" value="Fetch auth code"/>
+        <input id="fetchauth" type="button" value="Authenticate user"/>
 
         <pre class="step json-response"></pre>
     </form>
@@ -484,8 +549,9 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 <input type="url" class="wide" id="url_2" name="url" placeholder="https://example.com/oauth/token"/>
             </div>
             <div>
+                <div class="arrow right"></div>
                 <label for="authcode">Auth code:</label>
-                <input type="text" id="authcode" name="authcode" required placeholder=""/>
+                <input type="text" id="authcode" name="authcode" readonly placeholder=""/>
             </div>
             <div>
                 <label for="clientid_2">Client Id:</label>
