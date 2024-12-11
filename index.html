@@ -182,7 +182,7 @@
         border-style: solid;
         border-color: transparent var(--accent-color) var(--accent-color) transparent;
         border-width: 20px;
-        display: inline-block;
+        display: none;
         filter: drop-shadow(2px 2px 10px rgba(0, 0, 0, 0.25));
     }
 
@@ -258,6 +258,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 localStorage.getItem('state'));
         } else {
             setInput('authcode', queryStringParams.get('code'));
+            document.querySelector('#authcode-arrow').style.display='block';
 
             if (queryStringParams.get('scope')) {
                 setInput('scope', queryStringParams.get('scope'));
@@ -286,6 +287,8 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             if (xhr.status==200) {
                 setInput('authcode', '');
                 setInput('accesstoken', blob.access_token);
+                document.querySelector('#accesstoken-arrow').style.display='block';
+
                 if (blob.refresh_token) {
                     document.querySelector('.step.refresh').style.display='block';
                     document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='block';
@@ -293,6 +296,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 } else {
                     document.querySelector('.step.refresh').style.display='none';
                     document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='none';
+                    document.querySelector('#refreshtoken-arrow').style.display='block';
                 }
             }
         }
@@ -549,7 +553,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 <input type="url" class="wide" id="url_2" name="url" placeholder="https://example.com/oauth/token"/>
             </div>
             <div>
-                <div class="arrow right"></div>
+                <div class="arrow right authcode-arrow"></div>
                 <label for="authcode">Auth code:</label>
                 <input type="text" id="authcode" name="authcode" readonly placeholder=""/>
             </div>
@@ -570,6 +574,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
     <div class="step">
         <div>
+            <div class="arrow right accesstoken-arrow"></div>
             <span>Access token:</span>
             <input class="wide" type="text" id="accesstoken" name="accesstoken"/>
         </div>
@@ -588,6 +593,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 <label for="clientsecret_3">Client Secret:</label>
                 <input type="password" id="clientsecret_3" name="clientsecret" placeholder=""/>
             </div>
+            <div class="arrow right refreshtoken-arrow"></div>
             <div>
                 <span>Refresh token:</span>
                 <input class="wide" type="text" id="refreshtoken" name="refreshtoken"/>
