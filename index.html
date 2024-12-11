@@ -258,7 +258,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 localStorage.getItem('state'));
         } else {
             setInput('authcode', queryStringParams.get('code'));
-            document.querySelector('#authcode-arrow').style.display='block';
+            document.querySelector('.authcode-arrow').style.display='block';
 
             if (queryStringParams.get('scope')) {
                 setInput('scope', queryStringParams.get('scope'));
@@ -287,7 +287,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             if (xhr.status==200) {
                 setInput('authcode', '');
                 setInput('accesstoken', blob.access_token);
-                document.querySelector('#accesstoken-arrow').style.display='block';
+                document.querySelector('.accesstoken-arrow').style.display='block';
 
                 if (blob.refresh_token) {
                     document.querySelector('.step.refresh').style.display='block';
@@ -296,7 +296,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 } else {
                     document.querySelector('.step.refresh').style.display='none';
                     document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='none';
-                    document.querySelector('#refreshtoken-arrow').style.display='block';
+                    document.querySelector('.refreshtoken-arrow').style.display='block';
                 }
             }
         }
