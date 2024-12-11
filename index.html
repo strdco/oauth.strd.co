@@ -273,7 +273,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             '&client_secret='+encodeURIComponent(document.querySelector('#clientsecret_2').value)+
             '&code='+encodeURIComponent(document.querySelector('#authcode').value)+
             '&grant_type=authorization_code'+
-            '&redirect_uri'+encodeURIComponent(document.location.origin)
+            '&redirect_uri='+encodeURIComponent(document.location.origin)
         );
     }
 
