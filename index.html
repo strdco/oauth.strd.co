@@ -463,7 +463,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         localStorage.setItem('granttype', getInput('granttype'));
 
         localStorage.setItem('authurl', getInput('url_1'));
-        localStorage.setItem('clientid', getInput('clientid_1') || getInput('clientid_2') || getInput('clientid_3'));
+        localStorage.setItem('clientid', getInput('clientid_1'));
         localStorage.setItem('scope', getInput('scope'));
         localStorage.setItem('prompt',
             (getInput('prompt_consent') ? 'consent' : '') + ' ' +
@@ -471,7 +471,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         localStorage.setItem('access_type', getInput('access_type_offline') ? 'offline' : 'online');
 
         localStorage.setItem('tokenurl', getInput('url_2'));
-        localStorage.setItem('clientsecret', getInput('clientsecret_2') || getInput('clientsecret_3'));
+        localStorage.setItem('clientsecret', getInput('clientsecret_2'));
 
         localStorage.setItem('accesstoken', getInput('accesstoken'));
         localStorage.setItem('refreshtoken', getInput('refreshtoken'));
