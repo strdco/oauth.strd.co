@@ -362,17 +362,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             localStorage.setItem('state', generateState());
         }
 
-        document.querySelector('#granttype').value=localStorage.getItem('granttype');
-
-        document.querySelector('#url_1').value=localStorage.getItem('authurl');
-        document.querySelector('#clientid_1').value=localStorage.getItem('clientid');
-        document.querySelector('#clientid_2').value=localStorage.getItem('clientid');
-        document.querySelector('#clientid_3').value=localStorage.getItem('clientid');
-        document.querySelector('#state').value=localStorage.getItem('state');
-        document.querySelector('#scope').value=localStorage.getItem('scope');
-
-        document.querySelector('#url_2').value=localStorage.getItem('tokenurl');
-        document.querySelector('#url_3').value=localStorage.getItem('tokenurl');
+        populateFields();
 
 
 
@@ -460,10 +450,22 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
     }
 
     function populateFields() {
+        document.querySelector('#granttype').value=localStorage.getItem('granttype');
 
+        document.querySelector('#url_1').value=localStorage.getItem('authurl');
+        document.querySelector('#clientid_1').value=localStorage.getItem('clientid');
+        document.querySelector('#state').value=localStorage.getItem('state');
+        document.querySelector('#scope').value=localStorage.getItem('scope');
+
+        document.querySelector('#url_2').value=localStorage.getItem('tokenurl');
+        document.querySelector('#clientid_2').value=localStorage.getItem('clientid');
+
+        document.querySelector('#url_3').value=localStorage.getItem('tokenurl');
+        document.querySelector('#clientid_3').value=localStorage.getItem('clientid');
     }
 
 </script>
+
 
 
 
@@ -473,8 +475,8 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         <div>
             <label for="granttype">Grant type:</label>
             <select id="granttype">
-            <!--<option value="client_credentials">Client credentials</option> --->
                 <option value="auth_code">Auth code</option>
+                <option value="client_credentials">Client credentials</option>
             </select>
         </div>
     </div>
@@ -482,7 +484,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
     <form>
         <div class="step">
             <div>
-                <label for="urlselector">Service URL:</label>
+                <label for="urlselector">Examples:</label>
                 <select class="wide" id="urlselector">
                     <option value=";;""></option>
                     <option value="https://accounts.google.com/o/oauth2/v2/auth;https://oauth2.googleapis.com/token;profile">Google</option>
