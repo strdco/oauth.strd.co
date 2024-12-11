@@ -69,10 +69,31 @@
         padding: 6px 20px;
         border-radius: 4px;
         z-index: 100;
-        background-color: rgb(0, 128, 0);
         color: white;
         content: attr(data-http-status);
     }
+    
+    .step.json-response[data-http-status^="HTTP/2"]::before {
+        background-color: rgb(0, 128, 0);
+        color: white;
+    }
+
+    .step.json-response[data-http-status^="HTTP/3"]::before {
+        background-color: rgb(255, 160, 0);
+        color: black;
+    }
+
+    .step.json-response[data-http-status^="HTTP/4"]::before {
+        background-color: rgb(160, 0, 0);
+        color: white;
+    }
+
+    .step.json-response[data-http-status^="HTTP/5"]::before {
+        background-color: rgb(255, 0, 0);
+        color: black;
+    }
+
+
 
     .step, .footer {
         background-color: white;
