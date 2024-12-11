@@ -386,7 +386,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             switch (getInput('granttype')) {
                 case 'auth_code':
                     fetchAccessToken();
-                    exit;
+                    break;
             }
         });
 
@@ -394,7 +394,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             switch (getInput('granttype')) {
                 case 'auth_code':
                     refreshAccessToken();
-                    exit;
+                    break;
             }
         });
 
