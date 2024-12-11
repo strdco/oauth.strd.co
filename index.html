@@ -55,12 +55,23 @@
     }
 
     .step.json-response {
-        display: none;
+        -display: none;
         background-color: rgb(0, 0, 0, 0.75);
         color: rgb(224, 224, 224);
         font-size: 12px;
         font-family: 'Lucida Console', 'Courier New', Courier, monospace;
         border-left-style: none;
+    }
+
+    .step.json-response::before {
+        position: absolute;
+        transform: translateY(-34px);
+        padding: 6px 20px;
+        border-radius: 4px;
+        z-index: 100;
+        background-color: rgb(0, 128, 0);
+        color: white;
+        content: attr(data-http-status);
     }
 
     .step, .footer {
@@ -228,8 +239,10 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
         xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
-            document.querySelector('#fetchtoken + .json-response').innerText=JSON.stringify(blob, null, 2);
-            document.querySelector('#fetchtoken + .json-response').style.display='block';
+            var element=document.querySelector('#fetchtoken + .json-response');
+            element.setAttribute('data-http-status', 'HTTP/'+xhr.status);
+            element.innerText=JSON.stringify(blob, null, 2);
+            element.style.display='block';
 
             console.log(blob);
         }
@@ -256,8 +269,10 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
         xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
-            document.querySelector('#refreshtoken + .json-response').innerText=JSON.stringify(blob, null, 2);
-            document.querySelector('#refreshtoken + .json-response').style.display='block';
+            var element=document.querySelector('#refreshtoken + .json-response');
+            element.setAttribute('data-http-status', 'HTTP/'+xhr.status);
+            element.innerText=JSON.stringify(blob, null, 2);
+            element.style.display='block';
             console.log(blob);
 
         }
@@ -462,7 +477,10 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
         <input id="fetchtoken" type="button" value="Fetch token"/>
 
-        <pre class="step json-response"></pre>
+        <pre class="step json-response" data-http-status="200">{
+    "error": "invalid_grant",
+    "error_description": "Bad Request"
+}</pre>
     </form>
 
     <div class="step">
