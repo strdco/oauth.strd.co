@@ -236,10 +236,10 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             '&redirect_uri=' + encodeURIComponent(document.location.origin) +
             '&scope=' + encodeURIComponent(getInput('scope')) +
             '&state=' + encodeURIComponent(localStorage.getItem('state')) +
-            '&access_type=offline'+ // TODO: add checkbox for this option (required for refresh tokens); otherwise, access_type=online
-            '&prompt=consent' // TODO: add checkbox for this option (required for refresh tokens)
+            '&access_type='+(getInput('access_type_offline') ? 'offline' : 'online')+
+            '&prompt='+[getInput('prompt_consent') ? 'consent' : false,
+                        getInput('prompt_select_account') ? 'select_account' : false].filter(Boolean).join(' ')
 
-        console.log(url.split('&'));
         // .. and open it:
         window.open(url, '_self');
     }
