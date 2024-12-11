@@ -287,16 +287,18 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             if (xhr.status==200) {
                 setInput('authcode', '');
                 setInput('accesstoken', blob.access_token);
+                document.querySelector('.authcode-arrow').style.display='block';
                 document.querySelector('.accesstoken-arrow').style.display='block';
 
                 if (blob.refresh_token) {
                     document.querySelector('.step.refresh').style.display='block';
                     document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='block';
                     setInput('refreshtoken', blob.refresh_token);
+                    document.querySelector('.refreshtoken-arrow').style.display='block';
                 } else {
                     document.querySelector('.step.refresh').style.display='none';
                     document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='none';
-                    document.querySelector('.refreshtoken-arrow').style.display='block';
+                    document.querySelector('.refreshtoken-arrow').style.display='none';
                 }
             }
         }
