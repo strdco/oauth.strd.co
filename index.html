@@ -478,7 +478,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             inputElement.value=value;
         }
 
-        if (scrollIntoView) { inputElement.scrollIntoView(); }
+        if (scrollIntoView) { inputElement.scrollIntoView({ behavior: "smooth", block: "end" }); }
     }
 
     // Saves the values in the input fields in local storage:
