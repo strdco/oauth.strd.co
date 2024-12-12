@@ -79,6 +79,20 @@
         overflow-x: hidden;
     }
 
+    .step.http-request::after,
+    .step.json-response::after {
+        position: absolute;
+        z-index: 100;
+        content: "";
+        width: 0px;
+        height: 0px;
+        border-style: solid;
+        border-width: 10px;
+        border-color: transparent var(--accent-color) var(--accent-color) transparent;
+        transform: rotate(45deg) translate(16px, 16px);
+        left: calc(50% - 10px);
+    }
+
     .step.json-response::before {
         position: absolute;
         transform: translateY(-34px);
@@ -310,7 +324,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
             var reqElement=document.querySelector('#fetchtoken ~ .http-request');
             reqElement.innerText='$ curl \\\n'+
-                '   -X POST "/'+getInput('token_url').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
+                '   -X POST "'+getInput('token_url')+'" \\\n'+
                 '   -H "Content-Type: application/x-www-form-urlencoded" \\\n'+
                 '   -d "'+postData+'"';
             reqElement.style.display='block';
@@ -368,7 +382,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
             var reqElement=document.querySelector('#fetchtoken ~ .http-request');
             reqElement.innerText='$ curl \\\n'+
-                '   -X POST "/'+getInput('token_url').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
+                '   -X POST "'+getInput('token_url')+'" \\\n'+
                 '   -H "Content-Type: application/x-www-form-urlencoded" \\\n'+
                 '   -H "Authorization: Basic '+authorization+'" \\\n'+
                 '   -d "'+postData+'"';
