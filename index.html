@@ -307,9 +307,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
      */
 
     function fetchAccessToken() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', getInput('token_url'));
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        saveFields();
 
         const postData =
              'client_id='+encodeURIComponent(getInput('authcode_clientid'))+
@@ -318,6 +316,9 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             '&grant_type=authorization_code'+
             '&redirect_uri='+encodeURIComponent(document.location.origin)
 
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', getInput('token_url'));
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
@@ -368,14 +369,15 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
 
     function fetchClientCredentialsToken() {
+        saveFields();
+
         const authorization = btoa(getInput('client_credentials_clientid')+':'+getInput('clientsecret'));
+        const postData = 'grant_type=client_credentials';
 
         var xhr = new XMLHttpRequest();
         xhr.open('POST', getInput('token_url'));
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.setRequestHeader('Authorization', 'Basic '+authorization);
-
-        const postData = 'grant_type=client_credentials';
 
         xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
@@ -427,18 +429,19 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
      */
 
     function refreshAccessToken() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', getInput('token_url'));
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        saveFields();
 
         const postData=
-            'client_id='+encodeURIComponent(getInput('authcode_clientid'))+
+             'client_id='+encodeURIComponent(getInput('authcode_clientid'))+
             '&client_secret='+encodeURIComponent(getInput('clientsecret'))+
             '&refresh_token='+encodeURIComponent(getInput('refreshtoken'))+
             '&grant_type=refresh_token'
 
-        xhr.onload = function() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', getInput('token_url'));
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
+        xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
 
             var reqElement=document.querySelector('#fetchrefreshtoken ~ .http-request');
