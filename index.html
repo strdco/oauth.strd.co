@@ -39,6 +39,29 @@
         display: none;
     }
 
+    dialog::backdrop {
+        background-color: rgba(255, 255, 255, 0.25);
+        backdrop-filter: saturate(0);
+    }
+    
+    dialog {
+        padding: 50px 100px;
+        max-width: min(80vw, 600px);
+        background-color: rgb(255, 255, 255);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 10px 200px rgba(0, 0, 0, 0.25);
+        border-width: 4px;
+        border-style: solid;
+        border-color: var(--accent-color);
+        border-radius: 10px;
+        outline: none;
+    }
+
+    dialog span {
+        display: block;
+        margin-bottom: 25px;
+    }
+
     .glass-panel {
         position: relative;
         margin: auto;
@@ -354,6 +377,15 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             }
         }
 
+        xhr.onerror = function(e) {
+            showDialog(e.target.statusText ||
+                'The request could not be completed. '+
+                'This could be due to a CORS restriction by the server, '+
+                'or it could be a network issue.\n\n'+
+                'You can resolve CORS-related problems by '+
+                'using '+document.location.hostname+' as a proxy server.');
+        };
+
         xhr.send(postData);
 
         setInput('accesstoken', '');
@@ -414,6 +446,15 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             }
         }
 
+        xhr.onerror = function(e) {
+            showDialog(e.target.statusText ||
+                'The request could not be completed. '+
+                'This could be due to a CORS restriction by the server, '+
+                'or it could be a network issue.\n\n'+
+                'You can resolve CORS-related problems by '+
+                'using '+document.location.hostname+' as a proxy server.');
+        };
+
         xhr.send(postData);
 
         setInput('accesstoken', '');
@@ -460,6 +501,15 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 setInput('accesstoken', blob.access_token, true);
             }
         }
+
+        xhr.onerror = function(e) {
+            showDialog(e.target.statusText ||
+                'The request could not be completed. '+
+                'This could be due to a CORS restriction by the server, '+
+                'or it could be a network issue.\n\n'+
+                'You can resolve CORS-related problems by '+
+                'using '+document.location.hostname+' as a proxy server.');
+        };
 
         xhr.send(postData);
 
@@ -521,6 +571,25 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             }
         });
 
+        document.querySelector('input[type="checkbox"]#proxy').addEventListener('click', (e) => {
+            if (e.target.checked) {
+                showDialog('Warning: Using '+document.location.hostname+' as a ' +
+                    'proxy server will pass your authentication data through '+
+                    'that server. Though we will never log your traffic, only '+
+                    'check this box if you understand and accept what this means.'
+                );
+            }
+        });
+
+        document.querySelector('dialog input[type="button"]').addEventListener('click', (e) => {
+            e.target.parentElement.close();
+        });
+
+        document.querySelectorAll('#servername').forEach(e => {
+            e.innerText = document.location.hostname;
+        });
+
+
 
 
 
@@ -544,6 +613,15 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
      * Helper stuff
      * 
      */
+
+    function showDialog(text) {
+        var dialog=document.querySelector('dialog');
+
+        const span=dialog.querySelector('span');
+        span.innerText=text;
+
+        dialog.showModal();
+    }
 
     function generateState() {
         const bytes = new Uint8Array(12);
@@ -608,7 +686,10 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
 
 
-
+<dialog>
+    <span></span>
+    <input type="button" value="OK"/>
+</dialog>
 
 <div class="glass-panel">
     <div class="step">
@@ -667,7 +748,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             <div class="granttype auth_code">
                 <div class="arrow right authcode-arrow"></div>
                 <label for="authcode">Auth code:</label>
-                <input type="text" id="authcode" readonly placeholder=""/>
+                <input type="text" id="authcode" placeholder=""/>
             </div>
             <div class="granttype client_credentials">
                 <label for="client_credentials_clientid">Client Id:</label>
@@ -676,6 +757,9 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             <div>
                 <label for="clientsecret">Client Secret:</label>
                 <input type="password" id="clientsecret" placeholder=""/>
+            </div>
+            <div>
+                <input type="checkbox" id="proxy"/><label for="proxy">Use <span id="servername"></span> as a proxy server.</label>
             </div>
         </div>
 
