@@ -361,7 +361,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.setRequestHeader('Authorization', 'Basic '+authorization);
 
-        const postData = 'redirect_uri='+encodeURIComponent(document.location.origin)
+        const postData = 'grant_type=client_credentials';
 
         xhr.onload = function() {
             const blob=JSON.parse(xhr.response);
