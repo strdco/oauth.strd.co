@@ -178,6 +178,25 @@
 
 
 
+
+
+    .granttype {
+        display: none;
+    }
+
+    body[data-grant-type="auth_code"] .granttype.auth_code,
+    body[data-grant-type="client_credentials"] .granttype.client_credentials {
+        display: block;
+    }
+
+
+
+
+
+
+
+
+
     .arrow {
         position: absolute;
         border-style: solid;
@@ -230,10 +249,10 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         saveFields();
 
         // Construct the OAuth 2.0 URL to authenticate:
-        var url=getInput('url_1');
+        var url=getInput('auth_url');
         url = url+(url.indexOf('?')>=0 ? '&' : '?') +
             'response_type=code' +
-            '&client_id=' + encodeURIComponent(getInput('clientid')) +
+            '&client_id=' + encodeURIComponent(getInput('authcode_clientid')) +
             '&redirect_uri=' + encodeURIComponent(document.location.origin) +
             '&scope=' + encodeURIComponent(getInput('scope')) +
             '&state=' + encodeURIComponent(localStorage.getItem('state')) +
@@ -269,17 +288,17 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
     /*
      *
-     * STEP 3: Fetch the access token:
+     * STEP 3 (a): Fetch the access token (auth_code flow)
      * 
      */
 
     function fetchAccessToken() {
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', getInput('url_2'));
+        xhr.open('POST', getInput('token_url'));
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         const postData =
-             'client_id='+encodeURIComponent(getInput('clientid'))+
+             'client_id='+encodeURIComponent(getInput('authcode_clientid'))+
             '&client_secret='+encodeURIComponent(getInput('clientsecret'))+
             '&code='+encodeURIComponent(getInput('authcode'))+
             '&grant_type=authorization_code'+
@@ -291,7 +310,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
             var reqElement=document.querySelector('#fetchtoken ~ .http-request');
             reqElement.innerText='$ curl \\\n'+
-                '   -X POST "/'+getInput('url_2').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
+                '   -X POST "/'+getInput('token_url').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
                 '   -H "Content-Type: application/x-www-form-urlencoded" \\\n'+
                 '   -d "'+postData+'"';
             reqElement.style.display='block';
@@ -326,6 +345,67 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         setInput('refreshtoken', '');
     }
 
+
+    /*
+     *
+     * STEP 3 (b): Fetch the access token (client_credentials code flow)
+     * 
+     */
+
+
+    function fetchClientCredentialsToken() {
+        const authorization = btoa(getInput('client_credentials_clientid')+':'+getInput('clientsecret'));
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', getInput('token_url'));
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('Authorization', 'Basic '+authorization);
+
+        const postData = 'redirect_uri='+encodeURIComponent(document.location.origin)
+
+        xhr.onload = function() {
+            const blob=JSON.parse(xhr.response);
+
+            var reqElement=document.querySelector('#fetchtoken ~ .http-request');
+            reqElement.innerText='$ curl \\\n'+
+                '   -X POST "/'+getInput('token_url').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
+                '   -H "Content-Type: application/x-www-form-urlencoded" \\\n'+
+                '   -H "Authorization: Basic '+authorization+'" \\\n'+
+                '   -d "'+postData+'"';
+            reqElement.style.display='block';
+
+            var resElement=document.querySelector('#fetchtoken ~ .json-response');
+            resElement.setAttribute('data-http-status', 'HTTP/'+xhr.status);
+            resElement.innerText=JSON.stringify(blob, null, 3);
+            resElement.style.display='block';
+
+            if (xhr.status==200) {
+                setInput('authcode', '');
+                setInput('accesstoken', blob.access_token, true);
+                document.querySelector('.authcode-arrow').style.display='none';
+                document.querySelector('.accesstoken-arrow').style.display='block';
+
+                if (blob.refresh_token) {
+                    document.querySelector('.step.refresh').style.display='block';
+                    document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='block';
+                    setInput('refreshtoken', blob.refresh_token);
+                    document.querySelector('.refreshtoken-arrow').style.display='block';
+                } else {
+                    document.querySelector('.step.refresh').style.display='none';
+                    document.querySelector('input[type="button"]#fetchrefreshtoken').style.display='none';
+                    document.querySelector('.refreshtoken-arrow').style.display='none';
+                }
+            }
+        }
+
+        xhr.send(postData);
+
+        setInput('accesstoken', '');
+        setInput('refreshtoken', '');
+    }
+
+
+
     /*
      *
      * STEP 4: Refresh the access token:
@@ -334,11 +414,11 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
     function refreshAccessToken() {
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', getInput('url_2'));
+        xhr.open('POST', getInput('token_url'));
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         const postData=
-            'client_id='+encodeURIComponent(getInput('clientid'))+
+            'client_id='+encodeURIComponent(getInput('authcode_clientid'))+
             '&client_secret='+encodeURIComponent(getInput('clientsecret'))+
             '&refresh_token='+encodeURIComponent(getInput('refreshtoken'))+
             '&grant_type=refresh_token'
@@ -349,7 +429,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
             var reqElement=document.querySelector('#fetchrefreshtoken ~ .http-request');
             reqElement.innerText='$ curl \\\n'+
-                '   -X POST "/'+getInput('url_2').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
+                '   -X POST "/'+getInput('token_url').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
                 '   -H "Content-Type: application/x-www-form-urlencoded" \\\n'+
                 '   -d "'+postData+'"';
             reqElement.style.display='block';
@@ -387,12 +467,17 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         const urlParams = new URLSearchParams(window.location.search);
 
         document.querySelector('#urlselector').addEventListener('change', (e) => {
-            setInput('url_1', e.target.value.split(';')[0]);
-            setInput('url_2', e.target.value.split(';')[1]);
+            setInput('auth_url', e.target.value.split(';')[0]);
+            setInput('token_url', e.target.value.split(';')[1]);
             setInput('scope', e.target.value.split(';')[2]);
         });
 
+        document.querySelector('#granttype').addEventListener('change', (e) => {
+            document.body.setAttribute('data-grant-type', e.target.value);
+        });
+
         populateFields();
+        document.body.setAttribute('data-grant-type', getInput('granttype'));
 
 
 
@@ -404,6 +489,9 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             switch (getInput('granttype')) {
                 case 'auth_code':
                     fetchAccessToken();
+                    break;
+                case 'client_credentials':
+                    fetchClientCredentialsToken();
                     break;
             }
         });
@@ -447,7 +535,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
     }
 
     function getInput(id) {
-        var inputElement=document.querySelector('#'+id)
+        var inputElement=document.querySelector('input#'+id+', select#'+id)
         if (inputElement.type=='checkbox') {
             return inputElement.checked;
         } else {
@@ -456,7 +544,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
     }
 
     function setInput(id, value, scrollIntoView) {
-        var inputElement=document.querySelector('#'+id)
+        var inputElement=document.querySelector('input#'+id+', select#'+id)
         if (inputElement.type=='checkbox') {
             inputElement.checked=value;
         } else {
@@ -470,15 +558,15 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
     function saveFields() {
         localStorage.setItem('granttype', getInput('granttype'));
 
-        localStorage.setItem('authurl', getInput('url_1'));
-        localStorage.setItem('clientid', getInput('clientid'));
+        localStorage.setItem('authurl', getInput('auth_url'));
+        localStorage.setItem('clientid', getInput('authcode_clientid') || getInput('client_credentials_clientid'));
         localStorage.setItem('scope', getInput('scope'));
         localStorage.setItem('prompt',
             (getInput('prompt_consent') ? 'consent' : '') + ' ' +
             (getInput('prompt_select_account') ? 'select_account' : ''));
         localStorage.setItem('access_type', getInput('access_type_offline') ? 'offline' : 'online');
 
-        localStorage.setItem('tokenurl', getInput('url_2'));
+        localStorage.setItem('tokenurl', getInput('token_url'));
         localStorage.setItem('clientsecret', getInput('clientsecret'));
 
         localStorage.setItem('accesstoken', getInput('accesstoken'));
@@ -488,14 +576,15 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
     function populateFields() {
         setInput('granttype', localStorage.getItem('granttype') || 'auth_code');
 
-        setInput('url_1', localStorage.getItem('authurl'));
-        setInput('clientid', localStorage.getItem('clientid'));
+        setInput('auth_url', localStorage.getItem('authurl'));
+        setInput('authcode_clientid', localStorage.getItem('clientid'));
+        setInput('client_credentials_clientid', localStorage.getItem('clientid'));
         setInput('scope', localStorage.getItem('scope'));
         setInput('prompt_consent', (localStorage.getItem('prompt')===null ? true : localStorage.getItem('prompt').indexOf('consent'))!=-1);
         setInput('prompt_select_account', (localStorage.getItem('prompt')===null ? false : localStorage.getItem('prompt').indexOf('select_account')!=-1));
         setInput('access_type_offline', (localStorage.getItem('access_type')===null ? true : localStorage.getItem('access_type')=='offline'));
 
-        setInput('url_2', localStorage.getItem('tokenurl'));
+        setInput('token_url', localStorage.getItem('tokenurl'));
     }
 
 </script>
@@ -515,7 +604,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             </select>
         </div>
         <div>
-            <label for="granttype">Grant type:</label>
+            <label for="granttype">Flow:</label>
             <select id="granttype">
                 <option value="auth_code">Auth code</option>
                 <option value="client_credentials">Client credentials</option>
@@ -523,27 +612,27 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         </div>
     </div>
 
-    <form>
-        <div class="step">
+    <form class="granttype auth_code">
+        <div class="step auth">
             <div>
-                <input type="url" class="wide" id="url_1" name="url" placeholder="https://example.com/oauth/auth"/>
+                <input type="url" class="wide" id="auth_url" placeholder="https://example.com/oauth/auth"/>
             </div>
             <div>
-                <label for="clientid">Client Id:</label>
-                <input class= type="text" id="clientid" name="clientid" placeholder="Client Id"/>
+                <label for="authcode_clientid">Client Id:</label>
+                <input type="text" id="authcode_clientid" placeholder=""/>
             </div>
             <div>
                 <label for="scope">Scope:</label>
-                <input type="text" id="scope" name="scope" placeholder="Scope"/>
+                <input type="text" id="scope" placeholder="Scope"/>
             </div>
             <div>
-                <input type="checkbox" id="prompt_consent" name="prompt"/><label for="prompt_consent">Prompt consent (required for offline refresh)</label>
+                <input type="checkbox" id="prompt_consent"/><label for="prompt_consent">Prompt consent (required for offline refresh)</label>
             </div>
             <div>
-                <input type="checkbox" id="prompt_select_account" name="prompt"/><label for="prompt_select_account">Prompt to select account</label>
+                <input type="checkbox" id="prompt_select_account"/><label for="prompt_select_account">Prompt to select account</label>
             </div>
             <div>
-                <input type="checkbox" id="access_type_offline" name="access_type"/><label for="access_type_offline">Allow offline refresh</label>
+                <input type="checkbox" id="access_type_offline"/><label for="access_type_offline">Allow offline refresh</label>
             </div>
         </div>
 
@@ -555,16 +644,20 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
     <form>
         <div class="step">
             <div>
-                <input type="url" class="wide" id="url_2" name="url" placeholder="https://example.com/oauth/token"/>
+                <input type="url" class="wide" id="token_url" placeholder="https://example.com/oauth/token"/>
             </div>
-            <div>
+            <div class="granttype auth_code">
                 <div class="arrow right authcode-arrow"></div>
                 <label for="authcode">Auth code:</label>
-                <input type="text" id="authcode" name="authcode" readonly placeholder=""/>
+                <input type="text" id="authcode" readonly placeholder=""/>
+            </div>
+            <div class="granttype client_credentials">
+                <label for="client_credentials_clientid">Client Id:</label>
+                <input class= type="text" id="client_credentials_clientid" placeholder=""/>
             </div>
             <div>
                 <label for="clientsecret">Client Secret:</label>
-                <input type="password" id="clientsecret" name="clientsecret" placeholder=""/>
+                <input type="password" id="clientsecret" placeholder=""/>
             </div>
         </div>
 
@@ -578,7 +671,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         <div>
             <span>Access token:</span>
             <div class="arrow right accesstoken-arrow"></div>
-            <input class="wide" type="text" id="accesstoken" name="accesstoken"/>
+            <input class="wide" type="text" id="accesstoken"/>
         </div>
     </div>
 
@@ -587,7 +680,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             <div>
                 <span>Refresh token:</span>
                 <div class="arrow right refreshtoken-arrow"></div>
-                <input class="wide" type="text" id="refreshtoken" name="refreshtoken"/>
+                <input class="wide" type="text" id="refreshtoken"/>
             </div>
         </div>
 
