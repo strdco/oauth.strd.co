@@ -1,272 +1,3 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html lang="en">
-<head>
-<!---
-    <link rel="shortcut icon" href="/logo.png" type="image/png">
-    <link rel="icon" href="/logo.png" type="image/png">
-
-    <link rel="stylesheet" href="/style.css"/>
-
-    <script src="/client-side.js"></script>
---->
-
-    <title>OAuth Wizard</title>
-</head>
-<body>
-
-<style>
-    html {
-        width: 100%;
-        height: 100%;
-        padding: 0;
-        margin: 0;
-
-        --accent-color: rgba(255, 64, 128);
-    }
-
-    body {
-        background-image: url('./codioful-formerly-gradienta-J6LMHbdW1k8-unsplash.jpg');
-        background-attachment: fixed;
-        background-size: cover;
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    a.credit {
-        display: none;
-    }
-
-    dialog::backdrop {
-        background-color: rgba(255, 255, 255, 0.25);
-        backdrop-filter: saturate(0);
-    }
-    
-    dialog {
-        padding: 50px 100px;
-        max-width: min(80vw, 600px);
-        background-color: rgb(255, 255, 255);
-        backdrop-filter: blur(20px);
-        box-shadow: 0 10px 200px rgba(0, 0, 0, 0.25);
-        border-width: 4px;
-        border-style: solid;
-        border-color: var(--accent-color);
-        border-radius: 10px;
-        outline: none;
-    }
-
-    dialog span {
-        display: block;
-        margin-bottom: 25px;
-    }
-
-    .glass-panel {
-        position: relative;
-        margin: auto;
-        top: 40px;
-        width: 50%;
-        min-width: 400px;
-        max-width: 600px;
-        padding: 40px;
-        background: rgba(255, 255, 255, 0.5);
-        backdrop-filter: blur(20px);
-        box-shadow: 0 10px 200px rgba(0, 0, 0, 0.25);
-        border-width: 1px;
-        border-style: solid;
-        border-color: rgba(255, 255, 255, 0.75);
-        border-radius: 10px;
-        overflow-y: auto;
-    }
-
-    .step {
-        background-color: white;
-        margin: 20px auto;
-        padding: 30px;
-        font-size: 16px;
-        border-radius: 10px;
-        border-left-style: solid;
-        border-left-width: 4px;
-        border-left-color: white;
-    }
-
-    .step.http-request,
-    .step.json-response {
-        display: none;
-        background-color: rgb(0, 0, 0, 0.75);
-        color: rgb(224, 224, 224);
-        font-size: 12px;
-        font-family: 'Lucida Console', 'Courier New', Courier, monospace;
-        border-left-style: none;
-        overflow-x: hidden;
-    }
-
-    .step.http-request::after,
-    .step.json-response::after {
-        position: absolute;
-        z-index: 100;
-        content: "";
-        width: 0px;
-        height: 0px;
-        border-style: solid;
-        border-width: 10px;
-        border-color: transparent var(--accent-color) var(--accent-color) transparent;
-        transform: rotate(45deg) translate(16px, 16px);
-        left: calc(50% - 10px);
-    }
-
-    .step.json-response::before {
-        position: absolute;
-        transform: translateY(-34px);
-        padding: 6px 20px;
-        border-radius: 4px;
-        z-index: 100;
-        color: white;
-        content: attr(data-http-status);
-    }
-    
-    .step.json-response[data-http-status^="HTTP/2"]::before {
-        background-color: rgb(0, 128, 0);
-        color: white;
-    }
-
-    .step.json-response[data-http-status^="HTTP/3"]::before {
-        background-color: rgb(255, 160, 0);
-        color: black;
-    }
-
-    .step.json-response[data-http-status^="HTTP/4"]::before {
-        background-color: rgb(160, 0, 0);
-        color: white;
-    }
-
-    .step.json-response[data-http-status^="HTTP/5"]::before {
-        background-color: rgb(255, 0, 0);
-        color: black;
-    }
-
-    .step:focus-within {
-        border-left-color: var(--accent-color);
-    }
-
-    .step div {
-        margin-top: 5px;
-    }
-    .step span {
-        display: inline-block;
-        padding-top: 10px;
-    }
-
-    .step.refresh,
-    input[type="button"]#fetchrefreshtoken {
-        display: none;
-    }
-
-    label {
-        width: 120px;
-        margin-right: 5%;
-        display: inline-block;
-    }
-
-    input, select {
-        width: calc(100% - 170px);
-        font-size: 16px;
-        padding: 5px;
-        border-radius: 3px;
-        border-style: solid;
-        border-width: 1px;
-        border-color: rgb(64, 64, 64);
-    }
-
-    input[type="checkbox"] {
-        width: unset;
-    }
-
-    input[type="checkbox"] + label {
-        width: unset;
-    }
-
-    input[type="button"] {
-        background-color: var(--accent-color);
-        border-width: 1px;
-        border-radius: 10px;
-        color: white;
-        display: block;
-        margin: auto;
-        cursor: pointer;
-    }
-
-    input[type="button"]:active {
-        padding: 7px 3px 3px 7px;
-        box-shadow: inset 10px 10px 10px -10px rgba(0,0,0,0.5);
-    }
-
-    input.wide {
-        width: calc(100% - 25px);
-    }
-
-    input[type="text"]:focus,
-    input[type="password"]:focus,
-    input[type="url"]:focus {
-        background-color: rgba(255, 220, 0, 0.3);
-    }
-
-
-
-
-
-
-    .granttype {
-        display: none;
-    }
-
-    body[data-grant-type="auth_code"] .granttype.auth_code,
-    body[data-grant-type="client_credentials"] .granttype.client_credentials {
-        display: block;
-    }
-
-
-
-
-
-
-
-
-
-    .arrow {
-        position: absolute;
-        border-style: solid;
-        border-color: transparent var(--accent-color) var(--accent-color) transparent;
-        border-width: 20px;
-        display: none;
-        filter: drop-shadow(2px 2px 10px rgba(0, 0, 0, 0.25));
-    }
-
-    .arrow::after {
-        position: absolute;
-        content: "";
-        width: 20px;
-        height: 20px;
-        background-color: var(--accent-color);
-        transform: rotate(45deg) translate(-20px, 0px);
-    }
-
-    .right {
-        transform: rotate(-45deg) translate(-44px, -60px);
-    }
-
-</style>
-
-
-<!----
-https://www.oauth.com/oauth2-servers/authorization/the-authorization-request/
-https://www.oauth.com/oauth2-servers/authorization/the-authorization-response/
-https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
-
---->
-
-<script defer>
 
     /*
      *
@@ -339,23 +70,41 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             '&grant_type=authorization_code'+
             '&redirect_uri='+encodeURIComponent(document.location.origin)
 
+        var postUrl=getInput('token_url');
+        var proxyData='';
+        if (document.querySelector('input[type="checkbox"]#proxy').checked) {
+            postUrl='/proxy';
+            proxyData='&proxy_target='+encodeURIComponent(getInput('token_url'));
+            incrementRequestCount();
+        }
+
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', getInput('token_url'));
+        xhr.open('POST', postUrl);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         xhr.onload = function() {
-            const blob=JSON.parse(xhr.response);
+            var blob={};
+            try {
+                blob=JSON.parse(xhr.response);
+            } catch {
+                console.log('Could not parse response as JSON.');
+            }
 
             var reqElement=document.querySelector('#fetchtoken ~ .http-request');
             reqElement.innerText='$ curl \\\n'+
-                '   -X POST "'+getInput('token_url')+'" \\\n'+
-                '   -H "Content-Type: application/x-www-form-urlencoded" \\\n'+
-                '   -d "'+postData+'"';
-            reqElement.style.display='block';
+                '   --request POST "'+getInput('token_url')+'" \\\n'+
+                '   --header "Content-Type: application/x-www-form-urlencoded" \\\n'+
+                '   --data "'+postData.split("&").join('" \\\n'+
+                '   --data "')+'"';
+                reqElement.style.display='block';
 
             var resElement=document.querySelector('#fetchtoken ~ .json-response');
             resElement.setAttribute('data-http-status', 'HTTP/'+xhr.status);
-            resElement.innerText=JSON.stringify(blob, null, 3);
+            if (Object.keys(blob).length>0) {
+                resElement.innerText=JSON.stringify(blob, null, 3);
+            } else {
+                resElement.innerText=xhr.response.substr(0, 1000);
+            }
             resElement.style.display='block';
 
             if (xhr.status==200) {
@@ -386,7 +135,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 'using '+document.location.hostname+' as a proxy server.');
         };
 
-        xhr.send(postData);
+        xhr.send(postData + proxyData);
 
         setInput('accesstoken', '');
         setInput('refreshtoken', '');
@@ -406,25 +155,43 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         const authorization = btoa(getInput('client_credentials_clientid')+':'+getInput('clientsecret'));
         const postData = 'grant_type=client_credentials';
 
+        var postUrl=getInput('token_url');
+        var proxyData='';
+        if (document.querySelector('input[type="checkbox"]#proxy').checked) {
+            postUrl='/proxy';
+            proxyData='&proxy_target='+encodeURIComponent(getInput('token_url'));
+            incrementRequestCount();
+        }
+
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', getInput('token_url'));
+        xhr.open('POST', postUrl);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.setRequestHeader('Authorization', 'Basic '+authorization);
 
         xhr.onload = function() {
-            const blob=JSON.parse(xhr.response);
+            var blob={};
+            try {
+                blob=JSON.parse(xhr.response);
+            } catch {
+                console.log('Could not parse response as JSON.');
+            }
 
             var reqElement=document.querySelector('#fetchtoken ~ .http-request');
             reqElement.innerText='$ curl \\\n'+
-                '   -X POST "'+getInput('token_url')+'" \\\n'+
-                '   -H "Content-Type: application/x-www-form-urlencoded" \\\n'+
-                '   -H "Authorization: Basic '+authorization+'" \\\n'+
-                '   -d "'+postData+'"';
-            reqElement.style.display='block';
+                '   --request POST "'+getInput('token_url')+'" \\\n'+
+                '   --header "Content-Type: application/x-www-form-urlencoded" \\\n'+
+                '   --header "Authorization: Basic '+authorization+'" \\\n'+
+                '   --data "'+postData.split("&").join('" \\\n'+
+                    '   --data "')+'"';
+                reqElement.style.display='block';
 
             var resElement=document.querySelector('#fetchtoken ~ .json-response');
             resElement.setAttribute('data-http-status', 'HTTP/'+xhr.status);
-            resElement.innerText=JSON.stringify(blob, null, 3);
+            if (Object.keys(blob).length>0) {
+                resElement.innerText=JSON.stringify(blob, null, 3);
+            } else {
+                resElement.innerText=xhr.response.substr(0, 1000);
+            }
             resElement.style.display='block';
 
             if (xhr.status==200) {
@@ -455,7 +222,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 'using '+document.location.hostname+' as a proxy server.');
         };
 
-        xhr.send(postData);
+        xhr.send(postData + proxyData);
 
         setInput('accesstoken', '');
         setInput('refreshtoken', '');
@@ -478,23 +245,41 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
             '&refresh_token='+encodeURIComponent(getInput('refreshtoken'))+
             '&grant_type=refresh_token'
 
+        var postUrl=getInput('token_url');
+        var proxyData='';
+        if (document.querySelector('input[type="checkbox"]#proxy').checked) {
+            postUrl='/proxy';
+            proxyData='&proxy_target='+encodeURIComponent(getInput('token_url'));
+            incrementRequestCount();
+        }
+        
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', getInput('token_url'));
+        xhr.open('POST', postUrl);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         xhr.onload = function() {
-            const blob=JSON.parse(xhr.response);
+            var blob={};
+            try {
+                blob=JSON.parse(xhr.response);
+            } catch {
+                console.log('Could not parse response as JSON.');
+            }
 
             var reqElement=document.querySelector('#fetchrefreshtoken ~ .http-request');
             reqElement.innerText='$ curl \\\n'+
-                '   -X POST "/'+getInput('token_url').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
-                '   -H "Content-Type: application/x-www-form-urlencoded" \\\n'+
-                '   -d "'+postData+'"';
+                '   --request POST "/'+getInput('token_url').split('://')[1].split('/').slice(1, 99).join('/')+'" \\\n'+
+                '   --header "Content-Type: application/x-www-form-urlencoded" \\\n'+
+                '   --data "'+postData.split("&").join('" \\\n'+
+                    '   --data "')+'"';
             reqElement.style.display='block';
 
             var resElement=document.querySelector('#fetchrefreshtoken ~ .json-response');
             resElement.setAttribute('data-http-status', 'HTTP/'+xhr.status);
-            resElement.innerText=JSON.stringify(blob, null, 3);
+            if (Object.keys(blob).length>0) {
+                resElement.innerText=JSON.stringify(blob, null, 3);
+            } else {
+                resElement.innerText=xhr.response.substr(0, 1000);
+            }
             resElement.style.display='block';
 
             if (xhr.status==200) {
@@ -511,7 +296,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
                 'using '+document.location.hostname+' as a proxy server.');
         };
 
-        xhr.send(postData);
+        xhr.send(postData + proxyData);
 
         setInput('accesstoken', '');
     }
@@ -572,6 +357,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         });
 
         document.querySelector('input[type="checkbox"]#proxy').addEventListener('click', (e) => {
+            setButtonEnabledDisabled();
             if (e.target.checked) {
                 showDialog('Warning: Using '+document.location.hostname+' as a ' +
                     'proxy server will pass your authentication data through '+
@@ -614,6 +400,31 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
      * 
      */
 
+    var requestsInWindow=[];
+    var requestLimit=10;    // max number of requests
+    var requestWindow=20;  // seconds
+
+    function incrementRequestCount() {
+        requestsInWindow.push(Date.now());
+        setButtonEnabledDisabled();
+        setTimeout(() => {
+            if (requestsInWindow.length>0) {
+                requestsInWindow.shift(); // remove the oldest timestamp.
+                setButtonEnabledDisabled();
+            }
+        }, 1000*requestWindow);
+    }
+
+    function setButtonEnabledDisabled() {
+        const isProxied=document.querySelector('input[type="checkbox"]#proxy').checked;
+
+        //console.log('Queue length:', requestsInWindow.length);
+        document.querySelectorAll('input#fetchtoken, input#fetchrefreshtoken').forEach((e) => {
+            e.disabled=(requestsInWindow.length>=requestLimit && isProxied==true);
+        });
+    }
+
+
     function showDialog(text) {
         var dialog=document.querySelector('dialog');
 
@@ -621,6 +432,7 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
         span.innerText=text;
 
         dialog.showModal();
+        dialog.querySelector('input[type="button"]').focus();
     }
 
     function generateState() {
@@ -681,123 +493,3 @@ https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/
 
         setInput('token_url', localStorage.getItem('tokenurl'));
     }
-
-</script>
-
-
-
-<dialog>
-    <span></span>
-    <input type="button" value="OK"/>
-</dialog>
-
-<div class="glass-panel">
-    <div class="step">
-        <div>
-            <label for="urlselector">Examples:</label>
-            <select class="wide" id="urlselector">
-                <option value=";;""></option>
-                <option value="https://accounts.google.com/o/oauth2/v2/auth;https://oauth2.googleapis.com/token;profile">Google</option>
-                <option value="https://github.com/login/oauth/authorize;https://github.com/login/oauth/access_token;">Github</option>
-                <option value="https://apps.fortnox.se/oauth-v1/auth;https://apps.fortnox.se/oauth-v1/token;bookkeeping">Fortnox</option>
-            </select>
-        </div>
-        <div>
-            <label for="granttype">Flow:</label>
-            <select id="granttype">
-                <option value="auth_code">Auth code</option>
-                <option value="client_credentials">Client credentials</option>
-            </select>
-        </div>
-    </div>
-
-    <form class="granttype auth_code">
-        <div class="step auth">
-            <div>
-                <input type="url" class="wide" id="auth_url" placeholder="https://example.com/oauth/auth"/>
-            </div>
-            <div>
-                <label for="authcode_clientid">Client Id:</label>
-                <input type="text" id="authcode_clientid" placeholder=""/>
-            </div>
-            <div>
-                <label for="scope">Scope:</label>
-                <input type="text" id="scope" placeholder="Scope"/>
-            </div>
-            <div>
-                <input type="checkbox" id="prompt_consent"/><label for="prompt_consent">Prompt consent (required for offline refresh)</label>
-            </div>
-            <div>
-                <input type="checkbox" id="prompt_select_account"/><label for="prompt_select_account">Prompt to select account</label>
-            </div>
-            <div>
-                <input type="checkbox" id="access_type_offline"/><label for="access_type_offline">Allow offline refresh</label>
-            </div>
-        </div>
-
-        <input id="fetchauth" type="button" value="Authenticate user"/>
-
-        <pre class="step json-response"></pre>
-    </form>
-
-    <form>
-        <div class="step">
-            <div>
-                <input type="url" class="wide" id="token_url" placeholder="https://example.com/oauth/token"/>
-            </div>
-            <div class="granttype auth_code">
-                <div class="arrow right authcode-arrow"></div>
-                <label for="authcode">Auth code:</label>
-                <input type="text" id="authcode" placeholder=""/>
-            </div>
-            <div class="granttype client_credentials">
-                <label for="client_credentials_clientid">Client Id:</label>
-                <input class= type="text" id="client_credentials_clientid" placeholder=""/>
-            </div>
-            <div>
-                <label for="clientsecret">Client Secret:</label>
-                <input type="password" id="clientsecret" placeholder=""/>
-            </div>
-            <div>
-                <input type="checkbox" id="proxy"/><label for="proxy">Use <span id="servername"></span> as a proxy server.</label>
-            </div>
-        </div>
-
-        <input id="fetchtoken" type="button" value="Fetch token"/>
-
-        <pre class="step http-request"></pre>
-        <pre class="step json-response"></pre>
-    </form>
-
-    <div class="step">
-        <div>
-            <span>Access token:</span>
-            <div class="arrow right accesstoken-arrow"></div>
-            <input class="wide" type="text" id="accesstoken"/>
-        </div>
-    </div>
-
-    <form>
-        <div class="step refresh">
-            <div>
-                <span>Refresh token:</span>
-                <div class="arrow right refreshtoken-arrow"></div>
-                <input class="wide" type="text" id="refreshtoken"/>
-            </div>
-        </div>
-
-        <input id="fetchrefreshtoken" type="button" value="Refresh tokens"/>
-
-        <pre class="step http-request"></pre>
-        <pre class="step json-response"></pre>
-
-    </form>
-</div>
-
-
-<!----
-<a class="credit" href="https://unsplash.com/photos/blue-and-white-abstract-painting-J6LMHbdW1k8"></a>
---->
-
-</body>
-</html>
