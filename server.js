@@ -170,17 +170,19 @@ console.log(req.body);
         return;
     }
 
+    const originIp = req.headers['X-Forwarded-For'] || req.socket.remoteAddress;
+
     var postHeaders = {
         // Standard forwarded header (RFC 7239)
-        'Forwarded': `for=${req.ip};proto=${req.protocol};host=${req.get('host')}`,
-        
+        'Forwarded': `for=${originIp};proto=https;host=${req.get('host')}`,
+
         // Legacy X-Forwarded headers for broader compatibility
-        'X-Forwarded-For': req.ip,
+        'X-Forwarded-For': originIp,
         'X-Forwarded-Host': req.get('host'),
-        'X-Forwarded-Proto': req.protocol,
-        
+        'X-Forwarded-Proto': 'https',
+
         // Additional context
-        'X-Original-Client-IP': req.ip,
+        'X-Original-Client-IP': originIp,
         'X-Request-Start': Date.now().toString(),
 
         'User-Agent': req.hostname
@@ -210,7 +212,6 @@ console.log(req.body);
         res.status(500).send({
             "status": "proxy_error",
             "message": "Something went wrong with the proxy request.",
-            "request_headers": postHeaders,
             "details": e});
     }
 });
