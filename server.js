@@ -181,7 +181,9 @@ console.log(req.body);
         
         // Additional context
         'X-Original-Client-IP': req.ip,
-        'X-Request-Start': Date.now().toString()
+        'X-Request-Start': Date.now().toString(),
+
+        'User-Agent': req.hostname
     }
 
     if (req.headers.Authorization) {
@@ -234,10 +236,7 @@ async function proxyRequest(targetUrl, options = {}) {
         port: 443,
         path: url.pathname + url.search,
         method: 'POST',
-        headers: {
-            'User-Agent': 'auth.strd.co',
-            ...headers
-        }
+        headers: headers
     };
 
     return new Promise((resolve, reject) => {
