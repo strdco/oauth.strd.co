@@ -176,6 +176,10 @@ console.log(req.body);
         return;
     }
 
+console.log('X-Forwarded-For:', req.headers['X-Forwarded-For']);
+console.log('req.socket.remoteAddress:', req.socket.remoteAddress);
+console.log('');
+
     const originIp = req.headers['X-Forwarded-For'] || req.socket.remoteAddress;
 
     var postHeaders = {
