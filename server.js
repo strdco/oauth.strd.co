@@ -212,6 +212,7 @@ console.log(req.body);
         res.status(500).send({
             "status": "proxy_error",
             "message": "Something went wrong with the proxy request.",
+            "request_headers": postHeaders,
             "details": e});
     }
 });
