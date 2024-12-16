@@ -154,8 +154,6 @@ app.post('/proxy', apiRateLimiter, async function (req, res, next) {
 
     var requestIsValid=false;
 
-console.log(req.body);
-
     // authorization_code
     if (req.body.client_id!='' && req.body.client_secret!='' &&
         req.body.code!='' && req.body.grant_type=='authorization_code' &&
@@ -175,14 +173,6 @@ console.log(req.body);
         res.status(400).send({ "status": "error", "message": "Bad request." });
         return;
     }
-
-console.log('HEADERS:');
-console.log(req.headers);
-console.log('');
-
-console.log('SOCKET:');
-console.log(req.socket);
-console.log('');
 
     const originIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
@@ -210,10 +200,6 @@ console.log('');
     postData.delete('proxy_target');
 
     try {
-        console.log('POSTing to '+req.body.proxy_target);
-        console.log(postData.toString());
-        console.log(postHeaders);
-        console.log('---');
         var authResponse = await proxyRequest(req.body.proxy_target, {
             "method": "POST",
             "data": postData.toString(),
@@ -222,14 +208,13 @@ console.log('');
 
         res.status(authResponse.statusCode).send(authResponse.body);
     } catch(e) {
-        console.log(e);
         res.status(500).send({
             "status": "proxy_error",
-            "message": "Something went wrong with the proxy request.",
+            "message": "Something went wrong with the proxy request.", /*
             "request_headers": postHeaders,
             "req": {
                 "socket": req.socket,
-                "headers": req.headers },
+                "headers": req.headers }, */
             "details": e});
     }
 });
