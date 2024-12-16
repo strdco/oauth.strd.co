@@ -82,7 +82,7 @@
         font-size: 12px;
         font-family: 'Lucida Console', 'Courier New', Courier, monospace;
         border-left-style: none;
-        overflow-x: hidden;
+        overflow-x: auto;
     }
 
     .step.http-request::after,
