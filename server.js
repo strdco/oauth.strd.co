@@ -28,7 +28,7 @@ const apiRateLimiter = rateLimit({
     max: 10, // Limit each IP to 10 requests per time window
 
     keyGenerator: (req) => {
-        const ip = req.headers['X-Forwarded-For'] || req.socket.remoteAddress;
+        const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
         return ip ? ip.replace(/:\d+$/, '') : ip;
       },
     
@@ -184,7 +184,7 @@ console.log('SOCKET:');
 console.log(req.socket);
 console.log('');
 
-    const originIp = req.headers['X-Forwarded-For'] || req.socket.remoteAddress;
+    const originIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
     var postHeaders = {
         // Standard forwarded header (RFC 7239)
