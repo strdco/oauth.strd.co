@@ -6,6 +6,9 @@
      */
 
     function fetchAuthCode() {
+
+        if (!validateInputs(['auth_url', 'authcode_clientid'])) { return; }
+
         // Clear old auth code and access/refresh tokens
         setInput('authcode', '');
         setInput('accesstoken', '');
@@ -62,6 +65,8 @@
 
     function fetchAccessToken() {
         saveFields();
+
+        if (!validateInputs(['token_url', 'authcode_clientid', 'clientsecret', 'authcode'])) { return; }
 
         const postData =
              'client_id='+encodeURIComponent(getInput('authcode_clientid'))+
@@ -152,6 +157,8 @@
     function fetchClientCredentialsToken() {
         saveFields();
 
+        if (!validateInputs(['token_url', 'client_credentials_clientid', 'clientsecret'])) { return; }
+
         const authorization = btoa(getInput('client_credentials_clientid')+':'+getInput('clientsecret'));
         const postData = 'grant_type=client_credentials';
 
@@ -238,6 +245,8 @@
 
     function refreshAccessToken() {
         saveFields();
+
+        if (!validateInputs(['token_url', 'authcode_clientid', 'clientsecret', 'refreshtoken'])) { return; }
 
         const postData=
              'client_id='+encodeURIComponent(getInput('authcode_clientid'))+
@@ -424,6 +433,15 @@
         });
     }
 
+    function validateInputs(fields) {
+        for (const field of fields) {
+            if (getInput(field).trim()=='') {
+                showDialog('You need to provide a value for "'+field+'" in order to proceed.');
+                return false;
+            }
+        };
+        return true;
+    }
 
     function showDialog(text) {
         var dialog=document.querySelector('dialog');
