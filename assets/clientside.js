@@ -346,6 +346,16 @@
             fetchAuthCode();
         });
 
+        document.querySelector('input[type="button"]#reset').addEventListener('click', (e) => {
+            document.querySelectorAll('input[type="text"], input[type="password"], input[type="url"], input[type="checkbox"]').forEach(i => {
+                if (i.type=='checkbox') {
+                    i.checked=false;
+                } else {
+                    i.value='';
+                }
+            });
+        });
+
         document.querySelector('#fetchtoken').addEventListener('click', (e) => {
             switch (getInput('granttype')) {
                 case 'auth_code':
