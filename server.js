@@ -205,6 +205,10 @@ console.log(req.body);
         res.status(authResponse.statusCode).send(authResponse.body);
     } catch(e) {
         console.log(e);
+        res.status(500).send({
+            "status": "proxy_error",
+            "message": "Something went wrong with the proxy request.",
+            "details": e});
     }
 });
 
