@@ -26,6 +26,12 @@ app.use(express.urlencoded( { extended: true }));
 const apiRateLimiter = rateLimit({
     windowMs: 2 * 60 * 1000, // 2 minutes
     max: 10, // Limit each IP to 10 requests per time window
+
+    keyGenerator: (req) => {
+        const ip = req.headers['X-Forwarded-For'] || req.socket.remoteAddress;
+        return ip ? ip.replace(/:\d+$/, '') : ip;
+      },
+    
     message: {
       status: 'error',
       message: 'Too many requests, please try again later.'
