@@ -18,7 +18,7 @@ var serverPort=process.argv[2] || process.env.PORT || 3000;
 const app = express();
 app.disable('etag');
 app.disable('x-powered-by');
-app.disable('trust proxy'); // this breaks the rate limiting
+app.enable('trust proxy');
 
 app.use(express.json());
 app.use(express.urlencoded( { extended: true }));
