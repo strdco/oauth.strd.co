@@ -28,14 +28,17 @@
             <label for="urlselector">Examples:</label>
             <select class="wide" id="urlselector">
                 <option value=";;""></option>
-                <option value="https://accounts.google.com/o/oauth2/v2/auth;https://oauth2.googleapis.com/token;profile">Google</option>
-                <option value="https://github.com/login/oauth/authorize;https://github.com/login/oauth/access_token;user:email">Github</option>
-                <option value="https://login.microsoftonline.com/common/oauth2/v2.0/authorize;https://login.microsoftonline.com/common/oauth2/v2.0/token;openid profile email">Microsoft</option>
+                <option value="https://accounts.google.com/o/oauth2/v2/auth;https://oauth2.googleapis.com/token;profile;https://console.cloud.google.com/apis/credentials">Google</option>
+                <option value="https://github.com/login/oauth/authorize;https://github.com/login/oauth/access_token;user:email;https://github.com/settings/apps/authorizations">Github</option>
+                <option value="https://login.microsoftonline.com/common/oauth2/v2.0/authorize;https://login.microsoftonline.com/common/oauth2/v2.0/token;openid profile email;https://portal.azure.com/?l=en.sv-se#view/Microsoft_AAD_RegisteredApps/CreateApplicationBlade/quickStartType~/null/isMSAApp~/false">Microsoft</option>
                 <option value="https://apps.fortnox.se/oauth-v1/auth;https://apps.fortnox.se/oauth-v1/token;bookkeeping">Fortnox</option>
             </select>
         </div>
         <div>
-            <label for="granttype">Flow:</label>
+            <a id="application_setup_url" target="_blank"></a>
+        </div>
+        <div>
+            <label for="granttype">Flow: <span class="info"></span></label>
             <select id="granttype">
                 <option value="auth_code">Auth code</option>
                 <option value="client_credentials">Client credentials</option>
@@ -51,21 +54,21 @@
                 <input type="url" class="wide" id="auth_url" placeholder="https://example.com/oauth/auth"/>
             </div>
             <div>
-                <label for="authcode_clientid">Client Id:</label>
+                <label for="authcode_clientid">Client Id: <span class="info"></span></label>
                 <input type="text" id="authcode_clientid" placeholder=""/>
             </div>
             <div>
-                <label for="scope">Scope:</label>
+                <label for="scope">Scope: <span class="info"></span></label>
                 <input type="text" id="scope" placeholder="Scope"/>
             </div>
             <div>
-                <input type="checkbox" id="prompt_consent"/><label for="prompt_consent">Prompt consent (required for offline refresh)</label>
+                <input type="checkbox" id="prompt_consent"/><label for="prompt_consent">Prompt consent (required for offline refresh) <span class="info"></span></label>
             </div>
             <div>
-                <input type="checkbox" id="prompt_select_account"/><label for="prompt_select_account">Prompt to select account</label>
+                <input type="checkbox" id="prompt_select_account"/><label for="prompt_select_account">Prompt to select account <span class="info"></span></label>
             </div>
             <div>
-                <input type="checkbox" id="access_type_offline"/><label for="access_type_offline">Allow offline refresh</label>
+                <input type="checkbox" id="access_type_offline"/><label for="access_type_offline">Allow offline refresh <span class="info"></span></label>
             </div>
         </div>
 
@@ -81,19 +84,19 @@
             </div>
             <div class="granttype auth_code">
                 <div class="arrow right authcode-arrow"></div>
-                <label for="authcode">Auth code:</label>
+                <label for="authcode">Auth code: <span class="info"></span></label>
                 <input type="text" id="authcode" placeholder=""/>
             </div>
             <div class="granttype client_credentials">
-                <label for="client_credentials_clientid">Client Id:</label>
+                <label for="client_credentials_clientid">Client Id: <span class="info"></span></label>
                 <input class= type="text" id="client_credentials_clientid" placeholder=""/>
             </div>
             <div>
-                <label for="clientsecret">Client Secret:</label>
+                <label for="clientsecret">Client Secret: <span class="info"></span></label>
                 <input type="password" id="clientsecret" placeholder=""/>
             </div>
             <div>
-                <input type="checkbox" id="proxy"/><label for="proxy">Use <span id="servername"></span> as a proxy (to resolve CORS issues).</label>
+                <input type="checkbox" id="proxy"/><label for="proxy">Use <span id="servername"></span> as a proxy (to resolve CORS issues). <span class="info"></span></label>
             </div>
         </div>
 
@@ -105,7 +108,7 @@
 
     <div class="step">
         <div>
-            <span>Access token:</span>
+            <span>Access token: <span class="info"></span></span>
             <div class="arrow right accesstoken-arrow"></div>
             <input class="wide" type="text" id="accesstoken"/>
         </div>
@@ -114,7 +117,7 @@
     <form>
         <div class="step refresh">
             <div>
-                <span>Refresh token:</span>
+                <span>Refresh token: <span class="info"></span></span>
                 <div class="arrow right refreshtoken-arrow"></div>
                 <input class="wide" type="text" id="refreshtoken"/>
             </div>

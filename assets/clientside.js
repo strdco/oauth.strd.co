@@ -331,6 +331,16 @@
             setInput('auth_url', e.target.value.split(';')[0]);
             setInput('token_url', e.target.value.split(';')[1]);
             setInput('scope', e.target.value.split(';')[2]);
+
+            var a=document.querySelector('#application_setup_url');
+            if (e.target.value.split(';')[3]) {
+                const option=e.target.querySelector('option:checked');
+                a.href=e.target.value.split(';')[3];
+                a.innerText='Set up your '+option.innerText+' application here.';
+                a.style.display='inline';
+            } else {
+                a.style.display='none';
+            }
         });
 
         document.querySelector('#granttype').addEventListener('change', (e) => {
@@ -394,7 +404,13 @@
             e.innerText = document.location.hostname;
         });
 
-
+        document.querySelectorAll('span.info').forEach(i => {
+            const rel=i.parentElement.closest('label, span');
+            i.addEventListener('click', (e) => {
+                e.preventDefault();
+                showInformationText(rel);
+            });
+        });
 
 
 
@@ -451,6 +467,37 @@
             }
         };
         return true;
+    }
+
+    function showInformationText(rel) {
+        const id=rel.getAttribute('for') || rel.id || (rel.innerText+':').split(':')[0].toLowerCase();
+
+        switch (id) {
+            case 'granttype':
+                break;
+            case 'authcode_clientid':
+                break;
+            case 'scope':
+                break;
+            case 'prompt_consent':
+                break;
+            case 'prompt_select_account':
+                break;        
+            case 'access_type_offline':
+                break;
+            case 'authcode':
+                break;
+            case 'clientsecret':
+                break;
+            case 'proxy':
+                break;
+            case 'access token':
+                break;
+            case 'refresh token':
+                break;
+            case 'refresh client_credentials_clientid':
+                break;
+        }
     }
 
     function showDialog(text) {
