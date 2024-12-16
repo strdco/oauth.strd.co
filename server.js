@@ -213,6 +213,9 @@ console.log(req.body);
             "status": "proxy_error",
             "message": "Something went wrong with the proxy request.",
             "request_headers": postHeaders,
+            "req": {
+                "socket": req.socket,
+                "headers": req.headers },
             "details": e});
     }
 });
