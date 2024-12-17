@@ -43,7 +43,7 @@
 
     function receiveAuthCode(queryStringParams) {
         if (queryStringParams.get('state')!=localStorage.getItem('state')) {
-            window.alert('The returned state:\n'+
+            showDialog('The returned state:\n'+
                 queryStringParams.get('state')+
                 '\n... is not the one we expected:\n'+
                 localStorage.getItem('state'));
