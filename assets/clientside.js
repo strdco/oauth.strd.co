@@ -470,34 +470,15 @@
     }
 
     function showInformationText(rel) {
-        const id=rel.getAttribute('for') || rel.id || (rel.innerText+':').split(':')[0].toLowerCase();
+        const comment=Array.from(rel.parentElement.childNodes).filter(e => e.nodeName=='#comment' )[0].data;
 
-        switch (id) {
-            case 'granttype':
-                break;
-            case 'authcode_clientid':
-                break;
-            case 'scope':
-                break;
-            case 'prompt_consent':
-                break;
-            case 'prompt_select_account':
-                break;        
-            case 'access_type_offline':
-                break;
-            case 'authcode':
-                break;
-            case 'clientsecret':
-                break;
-            case 'proxy':
-                break;
-            case 'access token':
-                break;
-            case 'refresh token':
-                break;
-            case 'refresh client_credentials_clientid':
-                break;
-        }
+        var dialog=document.querySelector('dialog');
+
+        const span=dialog.querySelector('span');
+        span.innerHTML=comment;
+
+        dialog.showModal();
+        dialog.querySelector('input[type="button"]').focus();
     }
 
     function showDialog(text) {
