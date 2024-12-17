@@ -364,6 +364,7 @@
                     i.value='';
                 }
             });
+            window.open('./');
         });
 
         document.querySelector('#fetchtoken').addEventListener('click', (e) => {
