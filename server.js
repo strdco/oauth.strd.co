@@ -106,6 +106,17 @@ app.get('/', function (req, res, next) {
 
 
 
+/*-----------------------------------------------------------------------------
+  Azure Linux App Service Plan health check request:
+  ---------------------------------------------------------------------------*/
+
+app.get('/robots933456.txt', function (req, res, next) {
+    console.log("Azure health check: OK.");
+    res.status(200).send("OK");
+});
+
+
+
 
 /*-----------------------------------------------------------------------------
   Other related assets, like images, CSS or other files.
